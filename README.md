@@ -11,7 +11,7 @@
 
 <p align="center">
   <img alt="status" src="https://img.shields.io/badge/status-in%20development-E8A33D?style=flat-square">
-  <img alt="live" src="https://img.shields.io/badge/runtime-not%20launched-8C8C8C?style=flat-square">
+  <img alt="runtime" src="https://img.shields.io/badge/runtime-launched-8C8C8C?style=flat-square">
   <img alt="updated" src="https://img.shields.io/badge/last%20updated-2026--08--29-1E3A5F?style=flat-square">
 </p>
 
@@ -19,7 +19,7 @@
 
 > ### 🚧 In development — 2026-08-29
 >
-> **Nothing in this repository running in alpha.** 
+> **Nothing in this repository is running at production level. Platform is in alpha and still active development
 
 ---
 
