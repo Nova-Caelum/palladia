@@ -11,7 +11,7 @@
 
 <p align="center">
   <img alt="status" src="https://img.shields.io/badge/status-in%20development-E8A33D?style=flat-square">
-  <img alt="not launched" src="https://img.shields.io/badge/runtime-not%20launched-8C8C8C?style=flat-square">
+  <img alt="live" src="https://img.shields.io/badge/runtime-not%20launched-8C8C8C?style=flat-square">
   <img alt="updated" src="https://img.shields.io/badge/last%20updated-2026--08--29-1E3A5F?style=flat-square">
 </p>
 
@@ -19,9 +19,7 @@
 
 > ### 🚧 In development — 2026-08-29
 >
-> **Nothing in this repository is running yet.** This is the reviewed canonical package: identity, skills, plugin, config specification, and the runbook that installs them. The runtime it targets has not been rehabilitated. Treat every path, count, and gate here as *specified*, not *observed*, unless the file says otherwise.
->
-> Two things are still unverified and are marked in place: Obsidian **Bases** syntax (drafted from docs, never watched render) and the `case-session-entry` schema (still being designed — skills that lack a home for a field **ask**, they do not invent one).
+> **Nothing in this repository running in alpha.** 
 
 ---
 
