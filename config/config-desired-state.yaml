@@ -1,0 +1,210 @@
+# Palladia — desired-state config manifest
+#
+# Daniel reviewed: no
+#
+# This is NOT a full Hermes config.yaml. It lists ONLY the settings that must
+# differ from a blank profile, each with its justification and the defect it
+# closes. Everything not listed here stays at Hermes' default.
+#
+# The point of the manifest is PALLADIA-020: review the desired state first,
+# apply it through a controlled installer second. The failed build mutated the
+# runtime directly across create / rename / config / credential / gateway steps
+# with no reviewable target, which is why 20 defects accumulated unnoticed.
+#
+# Anything not traceable to a stated Palladia requirement does not belong in
+# the final config. The frozen runtime carried ~700 lines of inherited technical
+# defaults (coding, delegation, kanban, GitHub, model-eval, agent-registry) that
+# nobody chose. Closes PALLADIA-016.
+
+model:
+  default: gpt-5.6-terra
+  provider: openai-codex
+  base_url: https://chatgpt.com/backend-api/codex
+  # BILLING CONTRACT (Daniel, 2026-08-29): every gpt-5.6-* model resolves through
+  # the OpenAI Codex subscription, NEVER the Nous portal API. We hold a
+  # subscription nowhere near its limit; paying per token for the same model is
+  # pure waste. Note the model-name form differs by provider — codex uses the bare
+  # name (gpt-5.6-terra), nous uses the openai/-prefixed form. Switching provider
+  # without stripping the prefix breaks resolution silently.
+
+agent:
+  reasoning_effort: xhigh
+  # Stage-by-stage transcript scoring is exactly the workload where effort pays.
+
+fallback_providers:
+  - provider: nous
+    model: deepseek/deepseek-v4-flash
+  # Non-GPT model, so nous is correct and cheap. The billing contract is scoped
+  # to gpt-5.6-* only.
+
+auth_requirement:
+  providers_must_include: [openai-codex]
+  # auth.json MUST carry an openai-codex entry. A config pointing at openai-codex
+  # with no matching credential either fails over silently to a paid provider or
+  # borrows another profile's — both were observed live on 2026-08-29. This is an
+  # acceptance-gate assertion, not a config key.
+
+mcp_servers:
+  add:
+    - sequential_thinking
+                   # RESOLVED 2026-08-29 — Daniel: "Add the sequential mcp then for
+                   # sure." Previously listed as open with a "drop for v0"
+                   # recommendation; that recommendation is withdrawn. Two reasons it
+                   # earns its place: stage-by-stage case scoring is exactly the
+                   # multi-step reasoning shape the tool exists for, and the
+                   # `sequential-thinking` skill adapted from the catalog is written
+                   # against this MCP — without it the skill degrades to prose advice.
+    - context7
+                   # RESOLVED 2026-08-29 — moved from `remove` to `add`. Daniel kept
+                   # the `find-docs` skill in the audit, and `find-docs-nous` was
+                   # rewritten the same day to use `mcp__context7__*` instead of the
+                   # `ctx7` CLI. Keeping the skill while removing the server would
+                   # leave a skill that cannot run. NOTE the honest caveat carried
+                   # from the audit: its subject matter is library/SDK/API docs and
+                   # Palladia writes no code, so this pairing is worth revisiting.
+                   # It is here because the skill is here, not on its own merits.
+    - granola      # Session recordings and transcripts — the input to `session-intake`.
+                   # NOT YET INSTALLED OR TESTED (FixRegister B11 / DependencyRegister
+                   # P23). `session-intake` is blocked until this is proven.
+    - fal-ai       # Image generation (FixRegister B14). Credential is in BWS —
+                   # reference the entry by NAME only, never a value.
+  remove:
+    - nova_ops     # PALLADIA-005. Daniel: she is a functional agent, not a Nova
+                   # Caelum fleet agent. She gets her own worklog in PallaDrive.
+                   # Removing this also enforces the SOUL boundary structurally —
+                   # she cannot write the Supabase worklog because she has no tool.
+    - nova_vault   # PALLADIA-005. No AgentSecretBase access. Also the export story:
+                   # nothing Nova-Caelum-specific may be load-bearing for her.
+  not_needed:
+    # Both were planned as MCP installs. Verified in Hermes source 2026-08-29 that
+    # they are unnecessary — the platform already ships equivalents natively.
+    - exa          # Hermes has a native `web_search_tool` supporting exa / tavily /
+                   # parallel / firecrawl / searxng / brave-free / ddgs / xai, and
+                   # this profile ALREADY sets `search_backend: exa` and
+                   # `extract_backend: exa`. An explicit backend outranks the
+                   # credential-probe fallback order. Needs only EXA_API_KEY —
+                   # verified SET in the profile .env on 2026-08-29.
+    - browserbase  # Hermes ships a full native browser stack (browser_tool,
+                   # camofox, CDP). BROWSERBASE_API_KEY and BROWSERBASE_PROJECT_ID
+                   # are SET in the profile .env, so the capability is reachable
+                   # without an MCP.
+    # Side benefit: this sidesteps DependencyRegister P4 entirely — those credentials
+    # live in the `NovaCaelum/Ops-server` bws project, across a trust boundary
+    # olympus1 is deliberately walled off from.
+    # UNVERIFIED: that `search_backend: exa` actually routes through Exa at runtime
+    # has never been observed. It is a line item on the first-launch checklist.
+
+plugins:
+  enabled: [palladia-primer]
+  # CORRECTED 2026-08-29 (Vulcan audit §2 finding 6). This read `enabled: []` while
+  # the package also shipped `palladia-primer` — the plugin would have been copied
+  # to disk and never loaded. Standalone plugins are opt-in.
+  # Apply with:  hermes -p palladia plugins enable palladia-primer
+  #
+  # PALLADIA-006 still holds for everything else: the frozen runtime inherited
+  # `agent-registry-guard`. She performs no registry work, so that plugin is not
+  # disabled — it is absent. `palladia-primer` is the ONLY enabled plugin.
+
+discord:
+  require_mention: false
+  # PALLADIA-010 candidate fix. The frozen config had this TRUE while the design
+  # intent was mention-free response inside the allowlisted channels. Slash commands
+  # worked; ordinary messages were ignored. This is the cheapest test of that defect
+  # and must be verified with one real message, not assumed.
+  allowed_channels: [palladia-text, palladia-voice]   # by ID at apply time
+  free_response_channels: [palladia-text, palladia-voice]
+
+gateway_platforms:
+  discord:
+    enabled: true
+  telegram:
+    enabled: false
+    allowed_chats: []   # PALLADIA-008. Frozen runtime still carried Daniel's chat ID.
+  slack:
+    enabled: false
+  # ACCEPTANCE ASSERTION: the connected-platform set must equal exactly {discord}.
+  # The failed build produced Telegram token-conflict failures because the clone
+  # carried another profile's platform credentials.
+  #
+  # ⚠️ RENDERER CAVEAT (Vulcan audit §5, 2026-08-29). `gateway_platforms` is this
+  # document's DESIRED-STATE vocabulary; it is NOT verified to be the effective
+  # runtime key path. Do NOT invent `config set gateway_platforms.telegram.enabled`.
+  # The runbook step is: discover the effective keys on-host first —
+  #     hermes -p palladia config get <candidate>   # or: hermes -p palladia config list
+  # — then set the keys that actually exist. Acceptance is behavioural, not textual:
+  # the running gateway's connected-platform set must be exactly {discord}.
+
+kanban:
+  dispatch_in_gateway: false
+  # KEY PATH CORRECTED 2026-08-29 (Vulcan audit §5). This was written at TOP LEVEL as
+  # `dispatch_in_gateway: false`. The effective key is NESTED under `kanban:` —
+  # a top-level key is ignored and the default (true) silently survives. Verified
+  # on the frozen profile:
+  #     hermes -p palladia config get dispatch_in_gateway        -> not set
+  #     hermes -p palladia config get kanban.dispatch_in_gateway -> false
+  # Apply with:  hermes -p palladia config set kanban.dispatch_in_gateway false
+  #
+  # FAILURE NARRATIVE ALSO CORRECTED. The shared board is `~/.hermes/kanban.db`
+  # (machine-global), not the default profile's own directory. Current Hermes holds
+  # a machine-global advisory singleton lock at `~/.hermes/kanban/.dispatcher.lock`,
+  # so a second dispatcher normally logs "will not dispatch" rather than corrupting
+  # the DB. Omission is therefore not deterministically destructive — but `false`
+  # remains mandatory defence-in-depth for a non-dispatching profile, because the
+  # lock is advisory and unavailable-backstop cases still race.
+
+terminal:
+  cwd: /home/daniel/obsidian-vaults/palladrive
+  # PATH CORRECTED 2026-08-29. P22 RESOLVED: the Obsidian Sync remote "PallaDrive"
+  # (vault id b49c1da9a89a3cc1628af6987a9a1ae7) is materialized on olympus1 at
+  # `/home/daniel/obsidian-vaults/palladrive` — bidirectional, conflict strategy
+  # merge, 77 content files / 23 PDFs / 3 .base verified present.
+  # The sibling `/home/daniel/obsidian-vaults/palladia` (no `r`) that the frozen
+  # runtime pointed at is a DIFFERENT near-empty historical folder. It was never
+  # PallaDrive. Do not restore it.
+  # Apply with:  hermes -p palladia config set terminal.cwd /home/daniel/obsidian-vaults/palladrive
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  memory_char_limit: 2200
+  user_char_limit: 2200
+  write_approval: true
+  # write_approval stays TRUE: she should not silently rewrite her model of Daniel.
+  # NOTE: both files are frozen into the prompt at session start. Progress and task
+  # state live in PallaDrive, not here — see MemoryAndWorklog_Palladia §1.
+
+tts:
+  provider: openai
+  openai:
+    voice: alloy
+    # RESOLVED 2026-08-29 — Daniel: "TTS is alloy, that one was set on purpose."
+    # This is a DECISION, not an inherited default. Do not "improve" it, do not
+    # flag it as unchosen, and do not swap it while chasing a better voice. It
+    # previously looked like leftover clone state; it is not.
+
+stt:
+  enabled: true
+  provider: local
+  local:
+    model: base
+  # Local faster-whisper. Already verified working on the frozen runtime.
+
+approvals:
+  audit_clone_inheritance: true
+  # Not a real key — a gate. The platform guide records that a prior profile
+  # inherited a "pipe remote content to shell" command-allowlist entry from the
+  # default profile. Check and strip the allowlist at every profile create.
+
+skills:
+  allowlist_only: true
+  # PALLADIA-004. The frozen runtime carried 128 SKILL.md files cloned wholesale:
+  # DevOps, GitHub, agent registry, task graph, MLOps, smart-home. Rebuild from an
+  # allowlist; do NOT prune the inherited set in place.
+  v0_set:
+    - palladia-worklog   # drafted
+    - warm-up            # drafted
+    - session-intake     # drafted
+    - case-scoring       # blocked on Daniel
+    - weakness-derivation # blocked on Daniel
+    - high-yield-drills  # blocked on Daniel
+    - behavioral-scoring # blocked on Daniel

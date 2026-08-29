@@ -1,0 +1,6 @@
+name: palladia-primer
+version: "0.2.0"
+description: "Inject Palladia's generated primer (current target, open weaknesses, recent cases) into the first turn of each session, working around the 2,200-character frozen-snapshot limit on MEMORY.md."
+author: "Nova Caelum / ChiefPM"
+provides_hooks:
+  - pre_llm_call
