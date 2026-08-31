@@ -21,11 +21,11 @@ is deliberately absent.
 
 | # | Workspace source | PallaDrive destination | sha256 |
 |---:|---|---|---|
-| 1 | `drafts/SOUL.md` | `_system-files/canonical/identity/SOUL.md` | `434cdb00d22e3c80de0cd72c1fd1a28159b6f13917a3c91a87cb903f39573b16` |
+| 1 | `drafts/SOUL.md` | `_system-files/canonical/identity/SOUL.md` | `f58d74ac9011125440b398cec5226bde7ba0ccb9e4521a9fa6aa8802d0905b88` |
 | 2 | `drafts/MEMORY.md` | `_system-files/canonical/identity/MEMORY.md` | `ef19aa6647936ce02b54eeed388bbae4d7013ed91ac941485aa34d94ad65a8c2` |
-| 3 | `drafts/USER.md` | `_system-files/canonical/identity/USER.md` | `e81d5462bfabbf24883c1d13fd6ef91858815213664ad29f8ed0c11e9f72f44d` |
+| 3 | `drafts/USER.md` | `_system-files/canonical/identity/USER.md` | `4a1b125543cea9bce54e29cf8de0a4ed4ab683f5a1ac06a4594282a0ec0bbd24` |
 | 4 | `drafts/profile.yaml` | `_system-files/canonical/identity/profile.yaml` | `7d25af0f5f9ddcfa2683cf114a4f30c9589d8b297d366eefc4045bd9228b395f` |
-| 5 | `drafts/config-desired-state.yaml` | `_system-files/canonical/config/config-desired-state.yaml` | `dda968e095c8f5b46a6d67cfb97676bc7380e50860eeafaa508a11b272a1a3e4` |
+| 5 | `drafts/config-desired-state.yaml` | `_system-files/canonical/config/config-desired-state.yaml` | `40bee8898ca15987555e1d24c12de00d11eeefca38bdbb29f46e778a46abf6f6` |
 | 6 | `drafts/reference/SELF-MANAGEMENT.md` | `_system-files/canonical/reference/SELF-MANAGEMENT.md` | `d0110d609d0b28c50b8bcfead7241b5600a24c42ca9c30d2b23c142cb5db5b75` |
 | 7 | `drafts/cron/palladia-primer-refresh.md` | `_system-files/canonical/cron/palladia-primer-refresh.md` | `06bb31a36af25f8dae511e527a0c79a336a5d5afd7a6b11ce9b7b940cbdd3ea7` |
 | 8 | `drafts/plugins/palladia-primer/plugin.yaml` | `_system-files/canonical/plugins/palladia-primer/plugin.yaml` | `2a1e116d2982b84a4a736499a80a47e491c7245dbde0faf0e7937915e9625cb2` |

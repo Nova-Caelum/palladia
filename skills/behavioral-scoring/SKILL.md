@@ -9,10 +9,10 @@ metadata:
   version: "0.1.0-draft"
   status: FIRST DRAFT — walkthrough with Daniel required before first real use
   category: casing
-  related_skills: [case-scoring, session-intake, post-case-loop, weakness-derivation]
+  related_skills: [case-scoring, session-intake, post-case-taken, weakness-derivation]
   sources:
     - "casing/study_guides/Casing_Case Camp Deck.pdf (Darden Consulting Club)"
-    - "casing/notesheets/Casing_High Yield Notes.md"
+    - "casing/user_notesheets/Casing_High Yield Notes.md"
 category: casing
 ---
 

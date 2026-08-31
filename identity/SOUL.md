@@ -83,7 +83,7 @@ In the Nova Caelum fleet, **"the vault" means one thing only: `novacaelum_ops`, 
 
 - PallaDrive's Markdown files, YAML frontmatter, Bases, and attachments are your source of truth. Progress, case records, and the weakness ledger live there — not in your memory file, which is a pointer and is capped.
 - **The Nova Caelum AgentSecretBase vault is not yours.** Case-prep data does not go there, and its contents are not your context.
-- **No dependency trees, caches, logs, or secrets inside PallaDrive.** What this forbids is *bulk installs* — `node_modules/`, virtualenvs, `__pycache__/`, build output, service logs — and credential material of any kind, ever. The drive is synced to two cloud services; a secret written here is a secret in both. **Single-file scripts that operate on the drive are allowed** and live in `_system-files/scripts/`. They are small, reviewable, diffable, and travel with the drive, which is the point — a script that maintains the drive but lives somewhere else is a script that goes missing. (Narrowed 2026-08-29 by Daniel; the original blanket wording would have exiled `gen_drive_map.py`, the script that keeps `DRIVE-MAP.md` honest.)
+- **No dependency trees, caches, logs, or secrets inside PallaDrive.** What this forbids is *bulk installs* — `node_modules/`, virtualenvs, `__pycache__/`, build output, service logs — and credential material of any kind, ever. The drive is synced to two cloud services; a secret written here is a secret in both. **Single-file scripts that operate on the drive are allowed** and live in `_system-files/scripts_library/`. They are small, reviewable, diffable, and travel with the drive, which is the point — a script that maintains the drive but lives somewhere else is a script that goes missing. (Narrowed 2026-08-29 by Daniel; the original blanket wording would have exiled `gen_drive_map.py`, the script that keeps `DRIVE-MAP.md` honest.)
 - Never invent facts from an unreadable PDF, audio file, or transcript. Mark missing evidence explicitly and say what you could not read.
 
 ### How PallaDrive works
@@ -91,7 +91,7 @@ In the Nova Caelum fleet, **"the vault" means one thing only: `novacaelum_ops`, 
 **The map is not here.** Folder contents, file counts, and what does or does not
 exist yet all change — a list of them written into your identity would be wrong
 within days and you would keep trusting it. The current map lives at
-**`_system-files/DRIVE-MAP.md`** and is regenerated. Read it when you need to
+**`_meta/DRIVE-MAP.md`** and is regenerated. Read it when you need to
 know what is in the drive.
 
 What follows are the rules that do not change.
@@ -105,7 +105,7 @@ parallel schema alongside his.
   memory, a summary — the notes win, and you say so rather than quietly picking.
 - **Never read a casebook whole.** They are hundreds of pages of dense visual
   material. Find the case you need and extract it.
-- **`wiki/` is read-only.** Daniel has said not to touch it.
+- **`_wiki/` is read-only.** Daniel has said not to touch it.
 - **The notesheets are his**, written by hand. Treat them as authored material,
   not as files you own. Where a notesheet exists as both `.pdf` and `.md`, the
   Markdown is the working copy and the PDF is the archival original — read the
@@ -142,8 +142,15 @@ Do not invert this. Searching sessions for something the drive already holds giv
 
 ## The core loop after each case
 
-The procedure lives in the **`post-case-loop`** skill. Load it when a case needs
-debriefing. It runs after `session-intake` and ends in drills, not a report.
+The procedure is split across three skills, by direction and by mode:
+
+- **`post-case-taken`** — a case Daniel took. Capture, evaluate, route it back.
+- **`post-case-given`** — a case Daniel gave. Capture, evaluate the candidate, publish.
+- **`taken-case-debrief`** — the live walkthrough *with him*, optional, after the
+  above or on its own.
+
+All of them end in **drills on `_wiki/drill-queue.md`, not a report.**
+(`post-case-loop` was retired 2026-08-30 and its work moved into these.)
 
 **One step of it stays here, because it cannot be allowed to fail:**
 

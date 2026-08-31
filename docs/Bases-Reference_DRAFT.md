@@ -4,7 +4,7 @@
 >
 > **Every syntax claim in this document comes from Obsidian's published documentation. Not one of them has been verified against a Base we have watched render.**
 >
-> There were **zero `.base` files** in PallaDrive or the Nova Caelum vault when this was written, so there was no working local example to copy or check against. The first `.base` file in this vault is `_system-files/Worklog.base`, created the same day as this document.
+> There were **zero `.base` files** in PallaDrive or the Nova Caelum vault when this was written, so there was no working local example to copy or check against. The first `.base` file in this vault is `_meta/Worklog.base`, created the same day as this document.
 >
 > Treat everything below as a well-sourced hypothesis. When Daniel opens `Worklog.base` for the first time, work the **CONFIRM AFTER FIRST RENDER** checklist at the bottom, then correct this document and promote the reusable template out of its placeholder.
 >
@@ -26,7 +26,7 @@ Three consequences that matter more than any syntax detail:
 
 - **Deleting a `.base` file loses the view, never the entries.** The notes are untouched.
 - **A Base cannot show a property that no note has.** If a column is empty, the frontmatter is missing or misspelled — the Base is reporting honestly.
-- **You cannot "write a row into" a Base.** You create a note with the right frontmatter in the right folder, and it appears. This is the misconception most likely to cause trouble here: it is tempting to think of the Base as the worklog. The worklog is `_system-files/worklog_entries/`.
+- **You cannot "write a row into" a Base.** You create a note with the right frontmatter in the right folder, and it appears. This is the misconception most likely to cause trouble here: it is tempting to think of the Base as the worklog. The worklog is `_meta/worklog_entries/`.
 
 ## 2. When a Base is the right tool
 
@@ -153,21 +153,21 @@ views:
 
 ⚠️ **Unverified:** whether `order` also controls *sort* order or only *column* order. The docs call it column order. `Worklog.base` puts `note.created` first in every view assuming sorting is a UI control — **if entries render in the wrong order, that assumption is why.**
 
-## 4. Worked example — `_system-files/Worklog.base`
+## 4. Worked example — `_meta/Worklog.base`
 
-The first Base in this vault. It renders `_system-files/worklog_entries/` as Palladia's local worklog.
+The first Base in this vault. It renders `_meta/worklog_entries/` as Palladia's local worklog.
 
 **Design decisions worth reusing:**
 
-- **File-level filter pins the folder.** `file.inFolder("_system-files/worklog_entries")` plus `file.ext == "md"` means it can never accidentally pick up case notes from `casing/casing-session_log/`, which also carry frontmatter.
+- **File-level filter pins the folder.** `file.inFolder("_meta/worklog_entries")` plus `file.ext == "md"` means it can never accidentally pick up case notes from `casing/casing-session_log/`, which also carry frontmatter.
 - **A formula enforces a rule that would otherwise rot.** `summary_overflow` shows `OVER by N` when a summary exceeds 280 characters. A cap nobody can see is a cap nobody keeps.
 - **Four views, each earning its place:** *All entries* (the default), *Last 7 days* (the "what did we do this week" cut), *By type* (shows where effort is actually going), *Scored reps* (case + behavioral scores only, with `independence` prominent — because a right answer after three hints is not a right answer, and a table that hides help level inflates progress).
 
-**Frontmatter contract it reads:** `created`, `author`, `project`, `type`, `summary` (≤280), `tags`, `case_id`, `dimensions`, `independence`. Full definitions live in `_system-files/templates/Worklog Entry.md`.
+**Frontmatter contract it reads:** `created`, `author`, `project`, `type`, `summary` (≤280), `tags`, `case_id`, `dimensions`, `independence`. Full definitions live in `_meta/template_library/Worklog_Entry_template.md`.
 
 ## 5. Placement conventions
 
-- **Put the `.base` beside the folder it renders, not inside it.** `Worklog.base` sits in `_system-files/`, one level above `worklog_entries/`. Obsidian surfaces `.base` files as documents in the file explorer, so a Base living inside its own data folder would appear in the middle of the entries it renders.
+- **Put the `.base` beside the folder it renders, not inside it.** `Worklog.base` sits in `_meta/`, one level above `worklog_entries/`. Obsidian surfaces `.base` files as documents in the file explorer, so a Base living inside its own data folder would appear in the middle of the entries it renders.
 - **Name it as it should read as a document title.** Obsidian shows the filename. `Worklog.base` displays as "Worklog".
 - **One Base per subject.** A second Base for casing is planned and deliberately separate.
 
@@ -185,7 +185,7 @@ Work this list the first time `Worklog.base` is opened in Obsidian. Until then, 
 - [ ] **`By type` groups** — tests `groupBy` with a `note.`-prefixed property.
 - [ ] **`Scored reps` filters on an `or` of two equality expressions.**
 - [ ] **Sort order** — are entries newest-first, or is `order` column-order only? See the §3.5 warning.
-- [ ] **Templates plugin points somewhere.** Settings → Templates → template folder. It is **enabled but unconfigured**; set it to `_system-files/templates` or the entry template cannot be inserted.
+- [ ] **Templates plugin points somewhere.** Settings → Templates → template folder. It is **enabled but unconfigured**; set it to `_meta/template_library` or the entry template cannot be inserted.
 
 **After confirming:** correct every ⚠️ in this document, mark verified sections ✅, and fill §7.
 
