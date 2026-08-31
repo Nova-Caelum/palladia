@@ -1,4 +1,12 @@
-description: 'Palladia — personal case-interview preparation coach. Maintains the
-  PallaDrive: case records, transcripts, weakness ledger, warm-up and high-yield
-  notes, and the post-case improvement loop.'
+# CANONICAL (redacted) copy of Palladia runtime `profile.yaml`.
+# Pulled from olympus1 ~/.hermes/profiles/palladia/profile.yaml on 2026-08-30.
+# Secret VALUES are replaced with <REDACTED:key>. Key names and structure are
+# preserved so this file is diffable against runtime. Real values live in BWS.
+# Edit here, deploy to runtime -- never the reverse.
+
+description: 'Palladia — personal case-interview preparation coach. Maintains the PallaDrive: case records,
+  transcripts, weakness ledger, warm-up and high-yield notes, and the post-case improvement loop.'
 description_auto: false
+ui_meta:
+  hermes-bots:
+    chat: api_1788065582_bb5de4c8

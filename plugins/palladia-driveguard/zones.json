@@ -1,0 +1,109 @@
+{
+  "_comment": "Zone policy for PallaDrive. DATA, not code \u2014 a schema change is an edit here, never a code change. Paths are relative to vault_root, matched longest-prefix-first.",
+  "_schema_source": "_meta/DRIVE-MAP.md generated 2026-08-31T00:56:12 (181 files)",
+  "_vault_root_note": "Machine-agnostic. Resolution order: ctx.get_config('vault_path') -> PALLADRIVE_PATH env (tests only) -> first candidate below that CONTAINS the marker file. A path that does not contain the marker is never accepted, so a stale entry cannot silently win. olympus1 is listed first because that is the runtime host.",
+  "vault_candidates": [
+    "/home/daniel/obsidian-vaults/palladrive",
+    "/Users/danieleghdami/PALLAdrive",
+    "~/PALLAdrive",
+    "~/obsidian-vaults/palladrive"
+  ],
+  "vault_marker": "_meta/DRIVE-MAP.md",
+  "drivemap_relpath": "_meta/DRIVE-MAP.md",
+  "regen_script_relpath": "_system-files/scripts_library/gen_drive_map.py",
+  "zones": [
+    {
+      "prefix": "_system-files",
+      "policy": "deny",
+      "label": "canonical runtime",
+      "reason": "_system-files holds canonical runtime components \u2014 config, core_text, plugins, skills, crons, scripts. Writing here changes how you work. Say explicitly that you intend to write it."
+    },
+    {
+      "prefix": "_meta",
+      "policy": "read-first",
+      "label": "machinery you maintain",
+      "reason": "_meta holds the drive map, templates and your worklog \u2014 machinery you maintain. Read _meta/DRIVE-MAP.md before writing here."
+    },
+    {
+      "prefix": "_wiki",
+      "policy": "guarded",
+      "label": "reference bank",
+      "reason": "_wiki is the reference bank \u2014 concepts, baselines, the weakness ledger and drill queue."
+    },
+    {
+      "prefix": "casing",
+      "policy": "guarded",
+      "label": "case work"
+    },
+    {
+      "prefix": "behaviorals",
+      "policy": "guarded",
+      "label": "behavioral prep"
+    },
+    {
+      "prefix": "networking",
+      "policy": "guarded",
+      "label": "rolodex"
+    },
+    {
+      "prefix": "_inbox",
+      "policy": "free",
+      "label": "unsorted landing zone"
+    },
+    {
+      "prefix": "recordings",
+      "policy": "guarded",
+      "label": "session recordings"
+    }
+  ],
+  "default_policy": "guarded",
+  "terminal": {
+    "mutation_verbs": [
+      "mv",
+      "cp",
+      "rm",
+      "mkdir",
+      "rmdir",
+      "touch",
+      "ln",
+      "install",
+      "rsync"
+    ],
+    "credential_tripwire": [
+      "export ",
+      "--token",
+      "bearer ",
+      "aws_",
+      "api_key",
+      "apikey",
+      "secret",
+      "password",
+      "passwd",
+      "credential",
+      "private_key",
+      "bws ",
+      "KEY=",
+      "TOKEN=",
+      "PASS="
+    ]
+  },
+  "fuzzy": {
+    "separators": [
+      "-",
+      "_",
+      " ",
+      "."
+    ],
+    "strip_extensions": [
+      ".md",
+      ".pdf",
+      ".csv",
+      ".base",
+      ".png",
+      ".jpg",
+      ".yaml",
+      ".json",
+      ".py"
+    ]
+  }
+}

@@ -1,0 +1,212 @@
+---
+name: granola-capture
+description: >-
+  Use whenever a Granola meeting must be found or pulled — listing what was
+  recorded on a date, fetching a summary or transcript, or filling a session
+  file from Granola. Fires before any `list_meetings`, `get_meetings`, or
+  `get_meeting_transcript` call. Not for scoring or debriefing a session.
+disable-model-invocation: false
+metadata:
+  version: "0.1.0"
+  author: "Nova Caelum / Chief-PM"
+  license: "proprietary"
+  platforms: [linux]
+  category: casing
+  tags: [granola, mcp, transcripts, retrieval, failure-modes]
+  related_skills: [post-case-given, session-intake, pre-case-given]
+  provenance:
+    origin: "Nova Caelum-authored"
+    platform: "Hermes Agent (Nous Research) — palladia profile, olympus1"
+    design_source: "McGuffin live dry run 2026-08-30 — every behavior below observed, not documented"
+    reference_artifact: "casing/session_notes/2026_08_30_Daniel X Ryan/session-recording_Ryan20260830.md"
+category: casing
+---
+
+# Granola Capture
+
+## Overview
+
+The Granola MCP lies quietly. Three of its behaviors contradict its own tool
+schema, and all three fail **silently** — you get a clean, well-formed response
+containing less than you asked for, with no error and no signal that anything
+was withheld.
+
+This skill exists so that no agent ever trusts a single Granola call again.
+
+Everything here was observed in a live dry run on 2026-08-30. Where the schema
+disagrees with observation, the observation wins.
+
+## When to Use
+
+Before any Granola tool call. Fires on "pull the transcript", "what did I record
+today", "get the summary from that session", or any attempt to fill a
+session-recording file.
+
+**Not for:** scoring, debriefing, or anything after the transcript is in the file.
+
+## Four observed defects
+
+### 0 · An open note in the Granola app is listable but unpullable
+
+**The most common failure you will hit, and it is not a defect you work around —
+it is a state Daniel can clear in seconds.**
+
+Observed 2026-08-31 on note `dec24ccb`. It appeared reproducibly in a
+folder-scoped `list_meetings` and failed **both** content routes:
+`get_meetings` returned `not_found`, `get_meeting_transcript` returned
+"Meeting not found." A control note in the same folder, same day, succeeded on
+every route through identical calls.
+
+**Cause, from Daniel:** he had been chatting with Granola's in-app LLM about that
+note, which reopens the session and blocks it from syncing. Once he closed it,
+every probe that had failed succeeded — full summary and a 57.8 KB transcript.
+
+**How to tell this apart from Private:**
+
+| | Open-in-app | Private |
+|---|---|---|
+| Folder-scoped list | **present** | absent |
+| `get_meetings` by ID | `not_found` | `not_found` |
+| Self-resolves | **yes, on closing the note** | no |
+
+**Listable but unpullable means OPEN, not Private.** Do not diagnose Private
+when the note appears in a list — Private notes fail the list too.
+
+**What to do:** stop and ask Daniel to close the note in the Granola app, then
+retry. Do not report the session as missing, do not proceed without the
+transcript, and do not attribute it to Private.
+
+**A field-based precheck cannot catch this.** Every exposed list-row field on the
+failing note was identical to the working control — `captured_by_me`,
+`listed_as_participant`, `is_workspace_visible`, folder, owner. The failure is
+invisible at the metadata layer. The only detector is attempting the pull.
+
+### Three more observed defects
+
+### 1 · Private notes are invisible — the tripwire
+
+**A note set to Private cannot be retrieved by ANY path.** Observed on note
+`0b01a2a8`: retrievable, moved to Private mid-session, then failed all seven
+retrieval routes — unfiltered list, folder-scoped ×4, `workspace_only`, two
+`involvement` shapes, `get_meetings` by exact ID, and
+`get_meeting_transcript` by exact ID. Account and scopes unchanged throughout.
+
+The schema claims `personal` scope covers "notes accessible through private
+folders." It does not. Do not rely on that sentence.
+
+Private is orthogonal to filing and to workspace visibility. An unfiled note
+lists fine; three retrievable notes carried `is_workspace_visible=false`.
+
+**There is no recovery.** Filing it into a folder does not rescue it. The only
+fix is changing the Granola account default off Private — a Daniel action.
+Everything you can do is *detection*.
+
+### 2 · Indexes disagree — the unfiltered list is not reliably a superset
+
+Same date range, minutes apart: unfiltered returned 5 · folder-scoped returned 6
+(containing notes the unfiltered call dropped) · `workspace_only` returned 1. A
+meeting surfaced **only** under the folder-scoped call across repeated rounds.
+
+`[REVISED 2026-08-31]` The original reading was that unfiltered *permanently*
+drops notes. A later probe showed unfiltered as a proper superset (6 ⊇ 5) once
+the note in §0 was unblocked — so the asymmetry is **indexes disagreeing during a
+propagation window**, not a permanent filter defect.
+
+**The union sweep is still required**, for the revised reason: when the folder
+index and the primary index disagree, the folder-scoped call sometimes wins the
+race. One call is not enough. The schema's claim that omitting filters returns
+"every meeting the user is allowed to access" is still not something to rely on.
+
+### 3 · `get_meetings` silently drops IDs when batched
+
+**The most dangerous contract defect here.** Called with a single ID, a missing
+meeting returns an honest `not_found`. Called with several IDs, a missing one is
+**omitted with no `not_found` key at all** — the response returns `count=1`, the
+surviving meeting's full summary, and no indication anything was dropped.
+
+An agent batching ten IDs receives a clean, well-formed response and has no
+signal that sessions vanished.
+
+**Call `get_meetings` one ID at a time.** Never batch. If you must batch, assert
+the returned count equals the number of IDs sent and treat any shortfall as a
+failure — do not read past it.
+
+### 4 · `query_granola_meetings` is unusable
+
+It answered *"the meetings dataset is currently empty"* for a date on which
+`list_meetings` returned 5 and `get_meetings` returned a full summary. Do not
+build on it. `list_meetings` / `get_meetings` / `get_meeting_transcript` are sound.
+
+## Procedure
+
+### Step 1 — LIST, and always as a union
+
+1. `list_meeting_folders` — never assume the folder set. It changed mid-session
+   during the dry run. **Re-derive folder IDs every run; never hardcode them.**
+2. Fire the **same date range** against, at minimum: the unfiltered call · one
+   call per folder ID from step 1 · `workspace_only: true`.
+3. **Union by meeting ID.** Deduplicate on ID, never on title — titles are
+   neither unique nor stable.
+4. **Assert the expected count.** If Daniel says two sessions and the union holds
+   one, escalate. Do not proceed on a shortfall and do not report success.
+
+Costs ~5–7 calls instead of 1. Pay it. Folder membership and workspace
+visibility are independent axes; sweeping one and not the other loses notes.
+
+### Step 2 — Determine direction before pulling
+
+Daniel's titles carry the signal: `Taking` / `Taken` = he received the case;
+`Daniel casing <Person>` / `Given` = he gave it.
+
+**Confirm against the note body anyway.** In the dry run, direction was verified
+from the summary's content — all coaching flowing to the candidate — not the
+title alone.
+
+A reciprocal pair can exist on one day: 2026-08-30 held both `Ryan x Daniel`
+(Ryan gave, 12:00 PM) and `Daniel x Ryan` (Daniel gave, 1:11 PM). **Never
+collapse them into one session.**
+
+### Step 3 — PULL
+
+1. `get_meetings([id])` → AI summary → `## Granola Summary:`
+2. `get_meeting_transcript(id)` → verbatim → `## Full Transcript:`
+3. **Normalize speaker labels.** Granola emits `Me` for the note-taker and `Them`
+   for the counterpart. Rewrite `Me` → `Daniel`, `Them` → the counterpart's name.
+   Standing Daniel instruction 2026-08-30: relabel, do not preserve raw labels.
+   **Only the label changes. Wording inside each turn stays verbatim.**
+4. **Update the header** — `Transcript status:` → `Pulled — YYYY-MM-DD via
+   Granola MCP`, fill `Granola ID`, add session date/time, and record that labels
+   were normalized so a later reader knows they are derived.
+
+## Pitfalls
+
+- **Trusting one list call.** Defect 2. The unfiltered call silently drops notes.
+- **Reporting success on a short list.** The response is clean and well-formed
+  when notes are missing. Only an asserted count catches it.
+- **Hardcoding folder IDs.** They changed mid-session during the dry run.
+- **Deduplicating by title.** Titles repeat and change. Use IDs.
+- **Collapsing a reciprocal pair.** Two sessions with the same two people on one
+  day are two sessions.
+- **Flipping a status field for a transcript you did not pull.** A sibling file
+  in the same folder may correctly stay `Pending download`.
+- **Editing transcript wording while relabeling.** Labels only.
+- **Reaching for `query_granola_meetings`.** Defect 4.
+- **Batching `get_meetings`.** Defect 3 — IDs vanish silently. One at a time.
+- **Diagnosing Private when the note appears in a list.** Private fails the list
+  too. Listable-but-unpullable means the note is OPEN in the Granola app —
+  ask Daniel to close it and retry.
+- **Reporting a session missing before asking about the open-note state.** It is
+  a five-second fix on his end and it self-resolves completely.
+
+## Verification
+
+- [ ] `list_meeting_folders` was called this run; folder IDs were not recalled.
+- [ ] Union covers unfiltered + every folder + `workspace_only`, deduped by ID.
+- [ ] `get_meetings` was called **one ID at a time**, or the returned count was
+      asserted against the number sent.
+- [ ] A listable-but-unpullable note was escalated as OPEN-in-app, not Private.
+- [ ] Union count matches the expected session count, or you escalated.
+- [ ] Direction confirmed from note content, not the title alone.
+- [ ] `grep -cE '^\*\*(Me|Them):' <file>` returns **0**.
+- [ ] Header carries a real UUID and a status matching what actually happened.
+- [ ] Both `## Granola Summary:` and `## Full Transcript:` are non-empty.

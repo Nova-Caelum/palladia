@@ -1,0 +1,24 @@
+name: palladia-driveguard
+version: "0.1.0"
+manifest_version: 2
+api_version: 1
+description: "Zone policy, duplicate-folder prevention and fuzzy path correction for PallaDrive writes. Gates writes on a compression-aware drivemap read."
+author: "Nova Caelum / ChiefPM"
+license: proprietary
+provides_hooks:
+  - pre_llm_call
+  - pre_tool_call
+  - post_tool_call
+  - transform_tool_result
+  - transform_terminal_output
+python_dependencies: []
+config_schema:
+  vault_path:
+    type: str
+    default: "/Users/danieleghdami/Palladrive/PALLAdrive"
+    description: "Absolute path to PALLAdrive. Overridden by zones.json vault_root when present."
+  enforce:
+    type: bool
+    default: true
+    description: "False runs the guard in observe-only mode: every decision is logged, none applied."
+tags: [palladia, palladrive, file-hygiene, zone-policy, safety]

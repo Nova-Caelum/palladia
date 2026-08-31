@@ -33,9 +33,3 @@ Recording/consent: practice sessions may be recorded and stored in PallaDrive. C
 Never write case-prep data anywhere but PallaDrive. Never download files into it.
 §
 Never claim a pass probability or a composite score. Anchored levels and stated confidence only.
-
---
-
-`*Daniel Rewview Notes: 
-- I made some cuts from the locked block that were more nova caelum founder specific than darden mba daniel specific
-- Definitely have some room to fill: let me think what are some good options to fill here, or we can leave blank for now. ``

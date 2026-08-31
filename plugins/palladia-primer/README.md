@@ -11,7 +11,7 @@ Injects Palladia's generated primer into the first turn of each session.
 
 `memories/MEMORY.md` is capped at 2,200 characters and is injected as a **frozen snapshot** at session start — mid-session writes reach disk but not the prompt until the next session. Memory therefore cannot carry live state.
 
-This plugin reads a generated primer from PallaDrive at `_system-files/primer/PRIMER.md` and injects it, so Palladia opens each session knowing the current target, open weaknesses, and recent case activity. Memory holds pointers; the primer holds state.
+This plugin reads a generated primer from PallaDrive at `_system-files/core_text/PRIMER.md` and injects it, so Palladia opens each session knowing the current target, open weaknesses, and recent case activity. Memory holds pointers; the primer holds state.
 
 ## Mechanism
 
@@ -61,7 +61,7 @@ Hook output reaches model context. This plugin reads one known path and emits no
 | Setting | Default | Override |
 |---|---|---|
 | PallaDrive root | `/home/daniel/obsidian-vaults/palladrive` | `PALLADRIVE_PATH` env var |
-| Primer path | `_system-files/primer/PRIMER.md` | edit `_PRIMER_RELATIVE` |
+| Primer path | `_system-files/core_text/PRIMER.md` | edit `_PRIMER_RELATIVE` |
 | Injection cap | 6,000 chars | edit `_MAX_CHARS` |
 | Inject on | first turn only | `_is_first_turn` |
 

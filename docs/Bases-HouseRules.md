@@ -2,9 +2,9 @@
 
 **Author:** Chief-PM · 2026-08-29
 **Daniel reviewed:** no
-**Status:** VERIFIED against a live Obsidian round-trip on `casing/Case Log.base`, not inferred from docs.
+**Status:** VERIFIED against a live Obsidian round-trip on `Case Log.base`, not inferred from docs.
 
-Template: `_system-files/templates/_Base Template.base`
+Template: `_meta/template_library/_Base Template.base`
 
 ## How these were learned
 

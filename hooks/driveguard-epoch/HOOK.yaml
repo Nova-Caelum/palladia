@@ -1,0 +1,9 @@
+name: driveguard-epoch
+description: >-
+  Maintains a persistent, monotonic compression epoch on disk. Sole writer of
+  the bridge that palladia-driveguard reads to decide whether Palladia's
+  drivemap knowledge is still current.
+events:
+  - session:compress
+  - session:start
+  - session:reset

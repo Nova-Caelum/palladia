@@ -70,6 +70,7 @@ hand-written constants plus the exception's class name only.
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -80,10 +81,32 @@ from typing import Any, Dict, Optional
 # is materialized on olympus1 at this path, bidirectional, 77 content files.
 # The sibling `/home/daniel/obsidian-vaults/palladia` is a DIFFERENT near-empty
 # historical folder -- never point at it.
-_PALLADRIVE = Path(
-    os.environ.get("PALLADRIVE_PATH", "/home/daniel/obsidian-vaults/palladrive")
-)
-_PRIMER_RELATIVE = Path("_system-files/primer/PRIMER.md")
+def _discover_palladrive() -> Path:
+    """Marker-verified root. olympus1 first (runtime), Mac second (authoring).
+
+    A configured path that does not contain the marker is NOT accepted. On
+    2026-08-31 the sibling driveguard plugin pointed at a vault path that had
+    moved; it silently did nothing and nothing said so. Same discipline here.
+    """
+    marker = Path("_meta/DRIVE-MAP.md")
+    candidates = [
+        os.environ.get("PALLADRIVE_PATH", ""),
+        "/home/daniel/obsidian-vaults/palladrive",
+        os.path.expanduser("~/PALLAdrive"),
+    ]
+    for c in candidates:
+        try:
+            if c and (Path(c) / marker).is_file():
+                return Path(c)
+        except Exception:
+            continue
+    # Nothing verified. Return the olympus1 default so the existing
+    # _MISSING_NOTICE fires loudly rather than silently injecting nothing.
+    return Path("/home/daniel/obsidian-vaults/palladrive")
+
+
+_PALLADRIVE = _discover_palladrive()
+_PRIMER_RELATIVE = Path("_system-files/core_text/PRIMER.md")
 
 # Injected primer is capped so a runaway generator cannot eat the context budget.
 _MAX_CHARS = 6000
@@ -176,6 +199,105 @@ def _is_first_turn(payload: Dict[str, Any]) -> bool:
     return bool(value)
 
 
+_WORKLOG_DIR = Path("_meta/worklog_entries")
+_DRIVEMAP = Path("_meta/DRIVE-MAP.md")
+_BRIDGE_DIR = Path(
+    os.environ.get("DRIVEGUARD_BRIDGE_DIR", os.path.expanduser("~/.hermes/driveguard-bridge"))
+)
+
+
+def _frontmatter_field(text: str, field: str) -> Optional[str]:
+    """Same deliberately-dumb frontmatter scan as _extract_generated_at."""
+    if not text.startswith("---"):
+        return None
+    end = text.find("\n---", 3)
+    if end == -1:
+        return None
+    for line in text[3:end].splitlines():
+        stripped = line.strip()
+        if stripped.startswith(f"{field}:"):
+            return stripped.split(":", 1)[1].strip().strip("\"'") or None
+    return None
+
+
+def _load_worklog_tail(n: int = 2) -> str:
+    """Last n worklog summaries. Entries are named YYYY-MM-DD-HHMM-*.md, so a
+    filename sort is a chronological sort. NEVER raises."""
+    try:
+        d = _PALLADRIVE / _WORKLOG_DIR
+        if not d.is_dir():
+            return ""
+        files = sorted((f for f in d.iterdir() if f.suffix == ".md"),
+                       key=lambda f: f.name)[-n:]
+        if not files:
+            return ""
+        lines = []
+        for f in files:
+            try:
+                text = f.read_text(encoding="utf-8")
+            except Exception:
+                continue
+            summary = _frontmatter_field(text, "summary") or "(no summary)"
+            created = _frontmatter_field(text, "created") or f.name[:16]
+            lines.append(f"- {created} — {summary}")
+        if not lines:
+            return ""
+        return "=== YOUR LAST 2 WORKLOG ENTRIES ===\n" + "\n".join(lines)
+    except Exception:
+        return ""
+
+
+def _load_drivemap_digest() -> str:
+    """Top-level folders + the generated stamp. NOT the whole map.
+
+    The full map is ~13KB. Injecting it every session would crowd the context
+    for no benefit -- she can read it on demand, and the guard will tell her to.
+    What she needs up front is the SHAPE plus how stale it is. NEVER raises."""
+    try:
+        p = _PALLADRIVE / _DRIVEMAP
+        if not p.is_file():
+            return ("=== DRIVE MAP ===\nMISSING at "
+                    f"{p}. Do not guess folder locations; say so.")
+        stamp, tops = "", []
+        for line in p.read_text(encoding="utf-8").splitlines():
+            if line.startswith("> **Generated:**"):
+                stamp = line.split("**Generated:**")[1].strip()
+            if line.startswith("### `") and line.rstrip().endswith("`"):
+                tops.append(line.split("`")[1])
+        body = ", ".join(tops) if tops else "(none parsed)"
+        return (f"=== DRIVE MAP (digest; full map at {_DRIVEMAP}) ===\n"
+                f"Generated: {stamp or 'UNKNOWN — treat as stale'}\n"
+                f"Top-level: {body}\n"
+                "Read the full map before creating any new folder.")
+    except Exception:
+        return ""
+
+
+def _arm_driveguard(session_id: str) -> None:
+    """Tell palladia-driveguard the drive map is already in context.
+
+    Without this she is blocked on her FIRST write of every session and told to
+    read a map she was just handed. Plugins have separate memory and no
+    guaranteed load order, so this goes over the same disk bridge the gateway
+    hook uses rather than importing driveguard. NEVER raises."""
+    try:
+        sid = str(session_id or "")
+        if not sid:
+            return
+        safe = "".join(c for c in sid if c.isalnum() or c in "-_")[:64]
+        epoch_file = _BRIDGE_DIR / f"epoch-{safe}.json"
+        if not epoch_file.is_file():
+            return                      # no epoch yet -> guard stays fail-closed
+        epoch = json.loads(epoch_file.read_text(encoding="utf-8")).get("bridge_epoch")
+        if not isinstance(epoch, (int, float)):
+            return
+        _BRIDGE_DIR.mkdir(parents=True, exist_ok=True)
+        (_BRIDGE_DIR / f"armed-{safe}.json").write_text(json.dumps(
+            {"session_id": sid, "armed_at_epoch": int(epoch), "by": "palladia-primer"}))
+    except Exception:
+        pass
+
+
 def _pre_llm_call(**payload: Any) -> Optional[Dict[str, Any]]:
     """Per-turn callback. Injects the primer on the first turn only.
 
@@ -187,7 +309,9 @@ def _pre_llm_call(**payload: Any) -> Optional[Dict[str, Any]]:
     """
     if not _is_first_turn(payload):
         return None
-    return {"context": _load_primer()}
+    _arm_driveguard(payload.get("session_id", ""))
+    blocks = [_load_primer(), _load_drivemap_digest(), _load_worklog_tail()]
+    return {"context": "\n\n".join(b for b in blocks if b)}
 
 
 def register(ctx) -> None:

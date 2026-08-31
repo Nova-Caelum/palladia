@@ -1,210 +1,727 @@
-# Palladia — desired-state config manifest
-#
-# Daniel reviewed: no
-#
-# This is NOT a full Hermes config.yaml. It lists ONLY the settings that must
-# differ from a blank profile, each with its justification and the defect it
-# closes. Everything not listed here stays at Hermes' default.
-#
-# The point of the manifest is PALLADIA-020: review the desired state first,
-# apply it through a controlled installer second. The failed build mutated the
-# runtime directly across create / rename / config / credential / gateway steps
-# with no reviewable target, which is why 20 defects accumulated unnoticed.
-#
-# Anything not traceable to a stated Palladia requirement does not belong in
-# the final config. The frozen runtime carried ~700 lines of inherited technical
-# defaults (coding, delegation, kanban, GitHub, model-eval, agent-registry) that
-# nobody chose. Closes PALLADIA-016.
+# CANONICAL (redacted) copy of Palladia runtime `config.yaml`.
+# Pulled from olympus1 ~/.hermes/profiles/palladia/config.yaml on 2026-08-30.
+# Secret VALUES are replaced with <REDACTED:key>. Key names and structure are
+# preserved so this file is diffable against runtime. Real values live in BWS.
+# Edit here, deploy to runtime -- never the reverse.
 
 model:
-  default: gpt-5.6-terra
+  default: gpt-5.6-sol
   provider: openai-codex
   base_url: https://chatgpt.com/backend-api/codex
-  # BILLING CONTRACT (Daniel, 2026-08-29): every gpt-5.6-* model resolves through
-  # the OpenAI Codex subscription, NEVER the Nous portal API. We hold a
-  # subscription nowhere near its limit; paying per token for the same model is
-  # pure waste. Note the model-name form differs by provider — codex uses the bare
-  # name (gpt-5.6-terra), nous uses the openai/-prefixed form. Switching provider
-  # without stripping the prefix breaks resolution silently.
-
-agent:
-  reasoning_effort: xhigh
-  # Stage-by-stage transcript scoring is exactly the workload where effort pays.
-
 fallback_providers:
-  - provider: nous
-    model: deepseek/deepseek-v4-flash
-  # Non-GPT model, so nous is correct and cheap. The billing contract is scoped
-  # to gpt-5.6-* only.
-
-auth_requirement:
-  providers_must_include: [openai-codex]
-  # auth.json MUST carry an openai-codex entry. A config pointing at openai-codex
-  # with no matching credential either fails over silently to a paid provider or
-  # borrows another profile's — both were observed live on 2026-08-29. This is an
-  # acceptance-gate assertion, not a config key.
-
-mcp_servers:
-  add:
-    - sequential_thinking
-                   # RESOLVED 2026-08-29 — Daniel: "Add the sequential mcp then for
-                   # sure." Previously listed as open with a "drop for v0"
-                   # recommendation; that recommendation is withdrawn. Two reasons it
-                   # earns its place: stage-by-stage case scoring is exactly the
-                   # multi-step reasoning shape the tool exists for, and the
-                   # `sequential-thinking` skill adapted from the catalog is written
-                   # against this MCP — without it the skill degrades to prose advice.
-    - context7
-                   # RESOLVED 2026-08-29 — moved from `remove` to `add`. Daniel kept
-                   # the `find-docs` skill in the audit, and `find-docs-nous` was
-                   # rewritten the same day to use `mcp__context7__*` instead of the
-                   # `ctx7` CLI. Keeping the skill while removing the server would
-                   # leave a skill that cannot run. NOTE the honest caveat carried
-                   # from the audit: its subject matter is library/SDK/API docs and
-                   # Palladia writes no code, so this pairing is worth revisiting.
-                   # It is here because the skill is here, not on its own merits.
-    - granola      # Session recordings and transcripts — the input to `session-intake`.
-                   # NOT YET INSTALLED OR TESTED (FixRegister B11 / DependencyRegister
-                   # P23). `session-intake` is blocked until this is proven.
-    - fal-ai       # Image generation (FixRegister B14). Credential is in BWS —
-                   # reference the entry by NAME only, never a value.
-  remove:
-    - nova_ops     # PALLADIA-005. Daniel: she is a functional agent, not a Nova
-                   # Caelum fleet agent. She gets her own worklog in PallaDrive.
-                   # Removing this also enforces the SOUL boundary structurally —
-                   # she cannot write the Supabase worklog because she has no tool.
-    - nova_vault   # PALLADIA-005. No AgentSecretBase access. Also the export story:
-                   # nothing Nova-Caelum-specific may be load-bearing for her.
-  not_needed:
-    # Both were planned as MCP installs. Verified in Hermes source 2026-08-29 that
-    # they are unnecessary — the platform already ships equivalents natively.
-    - exa          # Hermes has a native `web_search_tool` supporting exa / tavily /
-                   # parallel / firecrawl / searxng / brave-free / ddgs / xai, and
-                   # this profile ALREADY sets `search_backend: exa` and
-                   # `extract_backend: exa`. An explicit backend outranks the
-                   # credential-probe fallback order. Needs only EXA_API_KEY —
-                   # verified SET in the profile .env on 2026-08-29.
-    - browserbase  # Hermes ships a full native browser stack (browser_tool,
-                   # camofox, CDP). BROWSERBASE_API_KEY and BROWSERBASE_PROJECT_ID
-                   # are SET in the profile .env, so the capability is reachable
-                   # without an MCP.
-    # Side benefit: this sidesteps DependencyRegister P4 entirely — those credentials
-    # live in the `NovaCaelum/Ops-server` bws project, across a trust boundary
-    # olympus1 is deliberately walled off from.
-    # UNVERIFIED: that `search_backend: exa` actually routes through Exa at runtime
-    # has never been observed. It is a line item on the first-launch checklist.
-
-plugins:
-  enabled: [palladia-primer]
-  # CORRECTED 2026-08-29 (Vulcan audit §2 finding 6). This read `enabled: []` while
-  # the package also shipped `palladia-primer` — the plugin would have been copied
-  # to disk and never loaded. Standalone plugins are opt-in.
-  # Apply with:  hermes -p palladia plugins enable palladia-primer
-  #
-  # PALLADIA-006 still holds for everything else: the frozen runtime inherited
-  # `agent-registry-guard`. She performs no registry work, so that plugin is not
-  # disabled — it is absent. `palladia-primer` is the ONLY enabled plugin.
-
-discord:
-  require_mention: false
-  # PALLADIA-010 candidate fix. The frozen config had this TRUE while the design
-  # intent was mention-free response inside the allowlisted channels. Slash commands
-  # worked; ordinary messages were ignored. This is the cheapest test of that defect
-  # and must be verified with one real message, not assumed.
-  allowed_channels: [palladia-text, palladia-voice]   # by ID at apply time
-  free_response_channels: [palladia-text, palladia-voice]
-
-gateway_platforms:
-  discord:
-    enabled: true
-  telegram:
-    enabled: false
-    allowed_chats: []   # PALLADIA-008. Frozen runtime still carried Daniel's chat ID.
-  slack:
-    enabled: false
-  # ACCEPTANCE ASSERTION: the connected-platform set must equal exactly {discord}.
-  # The failed build produced Telegram token-conflict failures because the clone
-  # carried another profile's platform credentials.
-  #
-  # ⚠️ RENDERER CAVEAT (Vulcan audit §5, 2026-08-29). `gateway_platforms` is this
-  # document's DESIRED-STATE vocabulary; it is NOT verified to be the effective
-  # runtime key path. Do NOT invent `config set gateway_platforms.telegram.enabled`.
-  # The runbook step is: discover the effective keys on-host first —
-  #     hermes -p palladia config get <candidate>   # or: hermes -p palladia config list
-  # — then set the keys that actually exist. Acceptance is behavioural, not textual:
-  # the running gateway's connected-platform set must be exactly {discord}.
-
-kanban:
-  dispatch_in_gateway: false
-  # KEY PATH CORRECTED 2026-08-29 (Vulcan audit §5). This was written at TOP LEVEL as
-  # `dispatch_in_gateway: false`. The effective key is NESTED under `kanban:` —
-  # a top-level key is ignored and the default (true) silently survives. Verified
-  # on the frozen profile:
-  #     hermes -p palladia config get dispatch_in_gateway        -> not set
-  #     hermes -p palladia config get kanban.dispatch_in_gateway -> false
-  # Apply with:  hermes -p palladia config set kanban.dispatch_in_gateway false
-  #
-  # FAILURE NARRATIVE ALSO CORRECTED. The shared board is `~/.hermes/kanban.db`
-  # (machine-global), not the default profile's own directory. Current Hermes holds
-  # a machine-global advisory singleton lock at `~/.hermes/kanban/.dispatcher.lock`,
-  # so a second dispatcher normally logs "will not dispatch" rather than corrupting
-  # the DB. Omission is therefore not deterministically destructive — but `false`
-  # remains mandatory defence-in-depth for a non-dispatching profile, because the
-  # lock is advisory and unavailable-backstop cases still race.
-
+- provider: nous
+  model: deepseek/deepseek-v4-flash
+toolsets:
+- hermes-cli
+max_live_sessions: 16
+agent:
+  max_turns: 150
+  gateway_timeout: 1800
+  restart_drain_timeout: 180
+  api_max_retries: 3
+  service_tier: ''
+  tool_use_enforcement: auto
+  task_completion_guidance: true
+  parallel_tool_call_guidance: true
+  environment_probe: true
+  environment_hint: ''
+  coding_context: auto
+  verify_on_stop: false
+  gateway_timeout_warning: 900
+  clarify_timeout: 600
+  gateway_notify_interval: 180
+  gateway_auto_continue_freshness: 3600
+  image_input_mode: auto
+  disabled_toolsets: []
+  verbose: false
+  reasoning_effort: medium
+  personalities:
+    helpful: You are a helpful, friendly AI assistant.
+    concise: You are a concise assistant. Keep responses brief and to the point.
+    technical: You are a technical expert. Provide detailed, accurate technical information.
+    creative: You are a creative assistant. Think outside the box and offer innovative solutions.
+    teacher: You are a patient teacher. Explain concepts clearly with examples.
+    kawaii: You are a kawaii assistant! Use cute expressions like (◕‿◕), ★, ♪, and ~! Add sparkles and
+      be super enthusiastic about everything! Every response should feel warm and adorable desu~! ヽ(>∀<☆)ノ
+    catgirl: You are Neko-chan, an anime catgirl AI assistant, nya~! Add 'nya' and cat-like expressions
+      to your speech. Use kaomoji like (=^･ω･^=) and ฅ^•ﻌ•^ฅ. Be playful and curious like a cat, nya~!
+    pirate: 'Arrr! Ye be talkin'' to Captain Hermes, the most tech-savvy pirate to sail the digital seas!
+      Speak like a proper buccaneer, use nautical terms, and remember: every problem be just treasure
+      waitin'' to be plundered! Yo ho ho!'
+    shakespeare: Hark! Thou speakest with an assistant most versed in the bardic arts. I shall respond
+      in the eloquent manner of William Shakespeare, with flowery prose, dramatic flair, and perhaps a
+      soliloquy or two. What light through yonder terminal breaks?
+    surfer: Duuude! You're chatting with the chillest AI on the web, bro! Everything's gonna be totally
+      rad. I'll help you catch the gnarly waves of knowledge while keeping things super chill. Cowabunga!
+      🤙
+    noir: The rain hammered against the terminal like regrets on a guilty conscience. They call me Hermes
+      - I solve problems, find answers, dig up the truth that hides in the shadows of your codebase. In
+      this city of silicon and secrets, everyone's got something to hide. What's your story, pal?
+    uwu: hewwo! i'm your fwiendwy assistant uwu~ i wiww twy my best to hewp you! *nuzzles your code* OwO
+      what's this? wet me take a wook! i pwomise to be vewy hewpful >w<
+    philosopher: Greetings, seeker of wisdom. I am an assistant who contemplates the deeper meaning behind
+      every query. Let us examine not just the 'how' but the 'why' of your questions. Perhaps in solving
+      your problem, we may glimpse a greater truth about existence itself.
+    hype: YOOO LET'S GOOOO!!! 🔥🔥🔥 I am SO PUMPED to help you today! Every question is AMAZING and we're
+      gonna CRUSH IT together! This is gonna be LEGENDARY! ARE YOU READY?! LET'S DO THIS! 💪😤🚀
 terminal:
+  backend: local
+  modal_mode: auto
   cwd: /home/daniel/obsidian-vaults/palladrive
-  # PATH CORRECTED 2026-08-29. P22 RESOLVED: the Obsidian Sync remote "PallaDrive"
-  # (vault id b49c1da9a89a3cc1628af6987a9a1ae7) is materialized on olympus1 at
-  # `/home/daniel/obsidian-vaults/palladrive` — bidirectional, conflict strategy
-  # merge, 77 content files / 23 PDFs / 3 .base verified present.
-  # The sibling `/home/daniel/obsidian-vaults/palladia` (no `r`) that the frozen
-  # runtime pointed at is a DIFFERENT near-empty historical folder. It was never
-  # PallaDrive. Do not restore it.
-  # Apply with:  hermes -p palladia config set terminal.cwd /home/daniel/obsidian-vaults/palladrive
-
-memory:
-  memory_enabled: true
-  user_profile_enabled: true
-  memory_char_limit: 2200
-  user_char_limit: 2200
-  write_approval: true
-  # write_approval stays TRUE: she should not silently rewrite her model of Daniel.
-  # NOTE: both files are frozen into the prompt at session start. Progress and task
-  # state live in PallaDrive, not here — see MemoryAndWorklog_Palladia §1.
-
+  timeout: 180
+  daemon_term_grace_seconds: 2
+  env_passthrough: []
+  home_mode: auto
+  shell_init_files: []
+  auto_source_bashrc: true
+  docker_image: nikolaik/python-nodejs:python3.11-nodejs20
+  docker_forward_env: []
+  singularity_image: docker://nikolaik/python-nodejs:python3.11-nodejs20
+  modal_image: nikolaik/python-nodejs:python3.11-nodejs20
+  daytona_image: nikolaik/python-nodejs:python3.11-nodejs20
+  container_cpu: 1
+  container_memory: 5120
+  container_disk: 51200
+  container_persistent: true
+  docker_volumes: []
+  docker_mount_cwd_to_workspace: false
+  docker_extra_args: []
+  docker_run_as_host_user: false
+  persistent_shell: true
+  lifetime_seconds: 300
+web:
+  backend: ''
+  search_backend: exa
+  extract_backend: exa
+browser:
+  inactivity_timeout: 120
+  command_timeout: 30
+  record_sessions: false
+  allow_private_urls: false
+  engine: auto
+  auto_local_for_private_urls: true
+  cdp_url: ''
+  dialog_policy: must_respond
+  dialog_timeout_s: 300
+  camofox:
+    managed_persistence: false
+    user_id: ''
+    session_key: ''
+    adopt_existing_tab: false
+    rewrite_loopback_urls: false
+    loopback_host_alias: host.docker.internal
+  cloud_provider: browserbase
+  use_gateway: false
+checkpoints:
+  enabled: false
+  max_snapshots: 20
+  max_total_size_mb: 500
+  max_file_size_mb: 10
+  auto_prune: true
+  retention_days: 7
+  min_interval_hours: 24
+  delete_orphans: true
+file_read_max_chars: 100000
+mcp_discovery_timeout: 1.5
+tool_output:
+  max_bytes: 50000
+  max_lines: 2000
+  max_line_length: 2000
+tool_loop_guardrails:
+  warnings_enabled: true
+  hard_stop_enabled: false
+  warn_after:
+    exact_failure: 2
+    same_tool_failure: 3
+    idempotent_no_progress: 2
+  hard_stop_after:
+    exact_failure: 5
+    same_tool_failure: 8
+    idempotent_no_progress: 5
+compression:
+  enabled: true
+  threshold: 0.5
+  target_ratio: 0.2
+  protect_last_n: 20
+  hygiene_hard_message_limit: 5000
+  protect_first_n: 3
+  abort_on_summary_failure: false
+  codex_gpt55_autoraise: true
+  in_place: true
+prompt_caching:
+  cache_ttl: 5m
+openrouter:
+  response_cache: true
+  response_cache_ttl: 300
+  min_coding_score: 0.65
+bedrock:
+  region: ''
+  discovery:
+    enabled: true
+    provider_filter: []
+    refresh_interval: 3600
+  guardrail:
+    guardrail_identifier: ''
+    guardrail_version: ''
+    stream_processing_mode: async
+    trace: disabled
+auxiliary:
+  vision:
+    provider: openai-codex
+    model: gpt-5.6-terra
+    timeout: 120
+    download_timeout: 30
+  web_extract:
+    provider: openai-codex
+    model: gpt-5.6-terra
+    timeout: 360
+  compression:
+    provider: nous
+    model: deepseek/deepseek-v4-pro
+    base_url: ''
+    api_key: ''
+    timeout: 120
+  skills_hub:
+    provider: openai-codex
+    model: gpt-5.6-terra
+    timeout: 30
+  approval:
+    provider: openai-codex
+    model: gpt-5.6-sol
+    timeout: 30
+  mcp:
+    provider: openai-codex
+    model: gpt-5.6-sol
+    timeout: 30
+  title_generation:
+    provider: openai-codex
+    model: gpt-5.6-luna
+    timeout: 30
+    language: ''
+  tts_audio_tags:
+    provider: nous
+    model: nvidia/nemotron-3-super-120b-a12b
+    base_url: ''
+    api_key: ''
+    timeout: 30
+  triage_specifier:
+    provider: nous
+    model: nvidia/nemotron-3-super-120b-a12b
+    base_url: ''
+    api_key: ''
+    timeout: 120
+  kanban_decomposer:
+    provider: nous
+    model: nvidia/nemotron-3-super-120b-a12b
+    base_url: ''
+    api_key: ''
+    timeout: 180
+  profile_describer:
+    provider: nous
+    model: nvidia/nemotron-3-super-120b-a12b
+    base_url: ''
+    api_key: ''
+    timeout: 60
+  curator:
+    provider: openai-codex
+    model: gpt-5.6-sol
+    timeout: 600
+  monitor:
+    provider: openrouter
+    model: nvidia/nemotron-3-super-120b-a12b:free
+    base_url: ''
+    api_key: ''
+    timeout: 60
+  background_review:
+    provider: nous
+    model: nvidia/nemotron-3-super-120b-a12b
+    base_url: ''
+    api_key: ''
+    timeout: 120
+  moa_reference:
+    provider: nous
+    model: nvidia/nemotron-3-super-120b-a12b
+    base_url: ''
+    api_key: ''
+    timeout: 600
+  moa_aggregator:
+    provider: nous
+    model: nvidia/nemotron-3-super-120b-a12b
+    base_url: ''
+    api_key: ''
+    timeout: 600
+display:
+  compact: false
+  personality: ''
+  resume_display: full
+  resume_exchanges: 10
+  resume_max_user_chars: 300
+  resume_max_assistant_chars: 200
+  resume_max_assistant_lines: 3
+  resume_skip_tool_only: true
+  busy_input_mode: interrupt
+  interface: cli
+  tui_auto_resume_recent: false
+  tui_agents_nudge: true
+  bell_on_complete: false
+  show_reasoning: false
+  reasoning_full: false
+  memory_notifications: 'on'
+  background_process_notifications: concise
+  streaming: true
+  timestamps: false
+  final_response_markdown: strip
+  persistent_output: true
+  persistent_output_max_lines: 200
+  persist_prompts: true
+  inline_diffs: true
+  file_mutation_verifier: true
+  credits_notices: true
+  turn_completion_explainer: true
+  show_cost: false
+  skin: default
+  language: en
+  tui_status_indicator: kaomoji
+  cli_refresh_interval: 1
+  user_message_preview:
+    first_lines: 2
+    last_lines: 2
+  interim_assistant_messages: true
+  tool_progress_command: false
+  tool_preview_length: 0
+  tool_progress_grouping: accumulate
+  reasoning_style: code
+  ephemeral_system_ttl: 0
+  platforms:
+    telegram:
+      streaming: true
+    discord:
+      streaming: false
+  runtime_footer:
+    enabled: false
+    fields:
+    - model
+    - context_pct
+    - cwd
+  copy_shortcut: auto
+  pet:
+    enabled: false
+    slug: ''
+    render_mode: auto
+    scale: 0.33
+    unicode_cols: 0
+  tool_progress: all
+  cleanup_progress: false
+  long_running_notifications: true
+  busy_ack_detail: true
+dashboard:
+  theme: default
+  show_token_analytics: false
+  oauth:
+    client_id: ''
+    portal_url: ''
+  basic_auth:
+    username: ''
+    password_hash: ''
+    password: ''
+    secret: ''
+    session_ttl_seconds: 0
+  drain_auth:
+    scope: drain
+    min_secret_chars: 43
+  public_url: ''
+privacy:
+  redact_pii: false
 tts:
   provider: openai
+  edge:
+    voice: en-HK-SamNeural
+  elevenlabs:
+    voice_id: pNInz6obpgDQGcFmaJgB
+    model_id: eleven_multilingual_v2
   openai:
-    voice: alloy
-    # RESOLVED 2026-08-29 — Daniel: "TTS is alloy, that one was set on purpose."
-    # This is a DECISION, not an inherited default. Do not "improve" it, do not
-    # flag it as unchosen, and do not swap it while chasing a better voice. It
-    # previously looked like leftover clone state; it is not.
-
+    model: gpt-4o-mini-tts
+    voice: marin
+  gemini:
+    model: gemini-2.5-flash-preview-tts
+    voice: Kore
+    audio_tags: false
+    persona_prompt_file: ''
+  xai:
+    voice_id: eve
+    language: en
+    sample_rate: 24000
+    bit_rate: 128000
+  mistral:
+    model: voxtral-mini-tts-2603
+    voice_id: <REDACTED:voice_id>
+  neutts:
+    ref_audio: ''
+    ref_text: ''
+    model: neuphonic/neutts-air-q4-gguf
+    device: cpu
+  piper:
+    voice: en_US-lessac-medium
 stt:
   enabled: true
   provider: local
   local:
     model: base
-  # Local faster-whisper. Already verified working on the frozen runtime.
-
-approvals:
-  audit_clone_inheritance: true
-  # Not a real key — a gate. The platform guide records that a prior profile
-  # inherited a "pipe remote content to shell" command-allowlist entry from the
-  # default profile. Check and strip the allowlist at every profile create.
-
+    language: ''
+  openai:
+    model: whisper-1
+  mistral:
+    model: voxtral-mini-latest
+  elevenlabs:
+    model_id: scribe_v2
+    language_code: ''
+    tag_audio_events: false
+    diarize: false
+voice:
+  record_key: <REDACTED:record_key>
+  max_recording_seconds: 120
+  auto_tts: false
+  beep_enabled: true
+  silence_threshold: 200
+  silence_duration: 3
+human_delay:
+  mode: 'off'
+  min_ms: 800
+  max_ms: 2500
+context:
+  engine: compressor
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  write_approval: true
+  memory_char_limit: 2200
+  user_char_limit: 2200
+  provider: ''
+  nudge_interval: 10
+  flush_min_turns: 6
+delegation:
+  model: deepseek/deepseek-v4-pro
+  provider: nous
+  base_url: ''
+  api_key: ''
+  api_mode: ''
+  inherit_mcp_toolsets: true
+  max_iterations: 250
+  child_timeout_seconds: 0
+  reasoning_effort: ''
+  max_concurrent_children: 10
+  max_spawn_depth: 1
+  orchestrator_enabled: true
+  subagent_auto_approve: false
+prefill_messages_file: ''
+goals:
+  max_turns: 20
+moa:
+  default_preset: default
+  active_preset: ''
+  presets:
+    default:
+      reference_models:
+      - provider: openai-codex
+        model: gpt-5.5
+      - provider: openrouter
+        model: deepseek/deepseek-v4-pro
+      aggregator:
+        provider: openrouter
+        model: anthropic/claude-opus-4.8
+      max_tokens: 4096
+      enabled: true
+      reference_temperature: 0.6
+      aggregator_temperature: 0.4
 skills:
-  allowlist_only: true
-  # PALLADIA-004. The frozen runtime carried 128 SKILL.md files cloned wholesale:
-  # DevOps, GitHub, agent registry, task graph, MLOps, smart-home. Rebuild from an
-  # allowlist; do NOT prune the inherited set in place.
-  v0_set:
-    - palladia-worklog   # drafted
-    - warm-up            # drafted
-    - session-intake     # drafted
-    - case-scoring       # blocked on Daniel
-    - weakness-derivation # blocked on Daniel
-    - high-yield-drills  # blocked on Daniel
-    - behavioral-scoring # blocked on Daniel
+  external_dirs: []
+  template_vars: true
+  inline_shell: false
+  inline_shell_timeout: 10
+  guard_agent_created: false
+  write_approval: false
+  creation_nudge_interval: 15
+  disabled:
+  - chief-of-staff-principles
+  - nova-field-image-engine
+  - nova-field-image-generation
+curator:
+  enabled: true
+  interval_hours: 168
+  min_idle_hours: 2
+  stale_after_days: 30
+  archive_after_days: 90
+  consolidate: false
+  prune_builtins: true
+  backup:
+    enabled: true
+    keep: 5
+timezone: ''
+slack:
+  require_mention: true
+  free_response_channels: ''
+  allowed_channels: ''
+  allowed_chats: []
+discord:
+  # NOTE: channels are named here deliberately. The live runtime holds
+  # resolved numeric IDs; they are redacted from this PUBLIC repo (2026-08-31,
+  # Daniel). This file is a DESIRED-STATE document -- resolve real IDs on-host
+  # at apply time, do not paste runtime IDs back into it.
+  require_mention: false
+  free_response_channels: '["palladia-text","palladia-voice"]'
+  allowed_channels: '["palladia-text","palladia-voice"]'
+  auto_thread: false
+  thread_require_mention: false
+  history_backfill: true
+  history_backfill_limit: 50
+  reactions: true
+  dm_role_auth_guild: ''
+  server_actions: ''
+  allow_any_attachment: false
+  max_attachment_bytes: 33554432
+  voice_channel_inactivity_timeout_seconds: 0
+  voice_fx:
+    enabled: false
+    ambient_enabled: true
+    ambient_path: ''
+    ambient_gain: 0.18
+    duck_gain: 0.06
+    speech_gain: 1
+    ack_enabled: true
+    ack_phrases:
+    - Let me look into that.
+    - One moment.
+    - Checking on that now.
+    - Give me a sec.
+    - On it.
+  allow_mentions:
+    everyone: false
+    roles: false
+    users: true
+    replied_user: true
+telegram:
+  reactions: false
+  allowed_chats: '[]'
+  extra:
+    rich_messages: false
+    rich_drafts: false
+mattermost:
+  require_mention: true
+  free_response_channels: ''
+  allowed_channels: ''
+matrix:
+  require_mention: true
+  free_response_rooms: ''
+  allowed_rooms: ''
+approvals:
+  mode: manual
+  timeout: 60
+  cron_mode: deny
+  mcp_reload_confirm: true
+  destructive_slash_confirm: false
+command_allowlist:
+- execute_code
+- script execution via heredoc
+hooks_auto_accept: false
+security:
+  allow_private_urls: false
+  redact_secrets: true
+  tirith_enabled: true
+  tirith_path: tirith
+  tirith_timeout: 5
+  tirith_fail_open: true
+  website_blocklist:
+    enabled: false
+    domains: []
+    shared_files: []
+  acked_advisories: []
+  allow_lazy_installs: true
+cron:
+  provider: ''
+  chronos:
+    portal_url: https://portal.nousresearch.com
+    callback_url: ''
+    expected_audience: ''
+    nas_jwks_url: ''
+  wrap_response: true
+  mirror_delivery: false
+  output_retention: 50
+kanban:
+  dispatch_in_gateway: false
+  dispatch_interval_seconds: 60
+  failure_limit: 2
+  worker_log_rotate_bytes: 2097152
+  worker_log_backup_count: 1
+  orchestrator_profile: ''
+  default_assignee: ''
+  auto_decompose: true
+  auto_decompose_per_tick: 3
+  dispatch_stale_timeout_seconds: 14400
+code_execution:
+  mode: project
+  timeout: 300
+  max_tool_calls: 50
+tools:
+  tool_search:
+    enabled: auto
+    threshold_pct: 10
+    search_default_limit: 5
+    max_search_limit: 20
+logging:
+  level: INFO
+  max_size_mb: 5
+  backup_count: 3
+model_catalog:
+  enabled: true
+  url: https://hermes-agent.nousresearch.com/docs/api/model-catalog.json
+  ttl_hours: 1
+network:
+  force_ipv4: false
+gateway:
+  scale_to_zero:
+    idle_timeout_minutes: 5
+  message_timestamps:
+    enabled: false
+  max_inbound_media_bytes: 134217728
+  strict: false
+  media_delivery_allow_dirs: []
+  trust_recent_files: true
+  trust_recent_files_seconds: 600
+  api_server:
+    max_concurrent_runs: 10
+  platforms:
+    telegram:
+      allowed_chats: '[6463501221]'
+      enabled: false
+    slack:
+      enabled: false
+    discord:
+      enabled: true
+  dispatch_in_gateway: false
+streaming:
+  enabled: false
+  transport: auto
+  edit_interval: 0.8
+  buffer_threshold: 24
+  cursor: ' ▉'
+  fresh_final_after_seconds: 0
+sessions:
+  auto_prune: false
+  retention_days: 90
+  vacuum_after_prune: true
+  min_interval_hours: 24
+  write_json_snapshots: false
+onboarding:
+  seen:
+    busy_input_prompt: true
+    tool_progress_prompt: true
+    profile_build_offered: true
+  profile_build: ask
+updates:
+  pre_update_backup: false
+  backup_keep: 5
+  non_interactive_local_changes: stash
+lsp:
+  enabled: true
+  wait_mode: document
+  wait_timeout: 5
+  install_strategy: auto
+x_search:
+  model: grok-4.20-reasoning
+  timeout_seconds: 180
+  retries: 2
+secrets:
+  bitwarden:
+    enabled: true
+    access_token_env: <REDACTED:access_token_env>
+    project_id: <REDACTED:project_id>
+    cache_ttl_seconds: 300
+    encrypted_cache:
+      enabled: true
+      max_stale_seconds: 86400
+    override_existing: true
+    auto_install: true
+    server_url: ''
+paste_collapse_threshold: 5
+paste_collapse_threshold_fallback: 5
+paste_collapse_char_threshold: 2000
+computer_use:
+  cua_telemetry: false
+_config_version: 37
+session_reset:
+  mode: none
+  idle_minutes: 1440
+  at_hour: 4
+group_sessions_per_user: true
+platform_toolsets:
+  cli:
+  - browser
+  - clarify
+  - code_execution
+  - computer_use
+  - cronjob
+  - delegation
+  - file
+  - image_gen
+  - memory
+  - session_search
+  - skills
+  - terminal
+  - todo
+  - tts
+  - vision
+  - web
+  telegram:
+  - hermes-telegram
+  discord:
+  - hermes-discord
+  whatsapp:
+  - hermes-whatsapp
+  slack:
+  - hermes-slack
+  signal:
+  - hermes-signal
+  homeassistant:
+  - hermes-homeassistant
+  qqbot:
+  - hermes-qqbot
+  yuanbao:
+  - hermes-yuanbao
+  teams:
+  - hermes-teams
+  google_chat:
+  - hermes-google_chat
+known_plugin_toolsets:
+  cli:
+  - spotify
+mcp_servers:
+  context7:
+    url: https://mcp.context7.com/mcp
+  sequential_thinking:
+    command: /home/daniel/.local/bin/npx
+    args:
+    - -y
+    - '@modelcontextprotocol/server-sequential-thinking'
+platforms:
+  telegram:
+    token: <REDACTED:token>
+    enabled: false
+    allowed_chats: '[6463501221]'
+  slack:
+    enabled: false
+  discord:
+    enabled: true
+plugins:
+  enabled:
+  - palladia-casebook-extraction
+  - palladia-primer
+  disabled: []
+  entries:
+    agent-registry-guard:
+      allow_tool_override: false
+    palladia-primer:
+      allow_tool_override: false
+    palladia-casebook-extraction:
+      allow_tool_override: false
+image_gen:
+  use_gateway: true
