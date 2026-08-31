@@ -13,6 +13,9 @@ import importlib.util
 import os
 import stat
 import tempfile
+import shutil
+import sys
+import pathlib
 import unittest
 from pathlib import Path
 
@@ -182,6 +185,83 @@ class PrimerHookTests(unittest.TestCase):
                     self.fail(f"_load_primer raised {type(exc).__name__}")
                 self.assertIsInstance(result, str)
                 self.assertTrue(result)
+
+
+class FirstTurnExtras(unittest.TestCase):
+    """Drivemap digest, worklog tail, and driveguard gate-arming.
+
+    Added 2026-08-31. Without the gate-arming, Palladia is blocked on her FIRST
+    write of every session and told to read a map she was just handed.
+    """
+
+    def setUp(self):
+        import json as _json
+        self.root = pathlib.Path(tempfile.mkdtemp())
+        self.vault = self.root / "PALLAdrive"
+        self.bridge = self.root / "bridge"
+        (self.vault / "_meta/worklog_entries").mkdir(parents=True)
+        (self.vault / "_system-files/core_text").mkdir(parents=True)
+        (self.vault / "_meta/DRIVE-MAP.md").write_text(
+            "# map\n> **Generated:** 2026-08-31T00:00:00\n\n### `_meta/`\n\n### `casing/`\n")
+        (self.vault / "_system-files/core_text/PRIMER.md").write_text("---\ngenerated_at: x\n---\nbody\n")
+        for name, summ in (("2026-08-01-0900-a.md", "older entry"),
+                           ("2026-08-02-0900-b.md", "middle entry"),
+                           ("2026-08-03-0900-c.md", "newest entry")):
+            (self.vault / "_meta/worklog_entries" / name).write_text(
+                f'---\ncreated: 2026-08-0X\nsummary: "{summ}"\n---\nbody\n')
+        self.bridge.mkdir()
+        os.environ["PALLADRIVE_PATH"] = str(self.vault)
+        os.environ["DRIVEGUARD_BRIDGE_DIR"] = str(self.bridge)
+        sys.modules.pop("pr", None)
+        spec = importlib.util.spec_from_file_location(
+            "pr", pathlib.Path(__file__).resolve().parent / "__init__.py")
+        self.pr = importlib.util.module_from_spec(spec)
+        sys.modules["pr"] = self.pr
+        spec.loader.exec_module(self.pr)
+
+    def tearDown(self):
+        shutil.rmtree(self.root, ignore_errors=True)
+        os.environ.pop("PALLADRIVE_PATH", None)
+        os.environ.pop("DRIVEGUARD_BRIDGE_DIR", None)
+
+    def _inject(self, sid="s", first=True):
+        out = self.pr._pre_llm_call(session_id=sid, user_message="hi", is_first_turn=first)
+        return (out or {}).get("context", "") if out else None
+
+    def test_marker_verified_root(self):
+        self.assertEqual(self.pr._PALLADRIVE, self.vault)
+
+    def test_injects_only_last_two_worklog_entries(self):
+        ctx = self._inject()
+        self.assertIn("newest entry", ctx)
+        self.assertIn("middle entry", ctx)
+        self.assertNotIn("older entry", ctx)
+
+    def test_injects_drivemap_digest_not_whole_file(self):
+        ctx = self._inject()
+        self.assertIn("2026-08-31T00:00:00", ctx)
+        self.assertIn("_meta/", ctx)
+        self.assertIn("casing/", ctx)
+
+    def test_arms_the_driveguard_gate(self):
+        import json as _json
+        (self.bridge / "epoch-s.json").write_text(_json.dumps({"bridge_epoch": 4}))
+        self._inject()
+        armed = self.bridge / "armed-s.json"
+        self.assertTrue(armed.is_file())
+        self.assertEqual(_json.loads(armed.read_text())["armed_at_epoch"], 4)
+
+    def test_does_not_arm_without_an_epoch(self):
+        self._inject()
+        self.assertFalse((self.bridge / "armed-s.json").exists(),
+                         "no epoch means the guard must stay fail-closed")
+
+    def test_second_turn_injects_nothing(self):
+        self.assertIsNone(self._inject(first=False))
+
+    def test_missing_drivemap_is_loud_not_silent(self):
+        (self.vault / "_meta/DRIVE-MAP.md").unlink()
+        self.assertIn("MISSING", self._inject())
 
 
 if __name__ == "__main__":

@@ -19,7 +19,8 @@ metadata:
 
 `PRIMER.md` is the only live-state surface you have. `MEMORY.md` is capped at 2,200
 characters and frozen into the prompt at session start, so it cannot carry anything
-that changes. The primer is injected fresh by the `on_session_start` hook, which
+that changes. The primer is injected fresh by the `palladia-primer` plugin's
+`pre_llm_call` hook on the session's first turn, which
 means it — and only it — determines whether you begin a session knowing what is
 currently true.
 

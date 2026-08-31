@@ -45,10 +45,13 @@ have their own paths.
    - `casing/casing-session_log/` — the recent case notes, especially each
      note's `(Growth) Feedback`. This is where recurring weaknesses actually
      live today.
-   - `_system-files/weakness-ledger.md` — **NOT YET CREATED.** When it exists it
-     becomes the first read. Until then, derive from the case notes and say that
-     is what you did. Do not report its absence as an error.
-   - `casing/notesheets/Casing_Warm Up Page.md` — Daniel's real warm-up page,
+   - `_wiki/drill-queue.md` — **read Open first.** `[VERIFIED 2026-08-30]` This
+     is the live list of what Daniel is actually working on. An open item with a
+     near retest date outranks a weakness you inferred from the notes: he already
+     decided that one matters. `[daniel-directed]` items outrank
+     `[palladia-derived]` ones of equal age.
+     This read is what keeps the queue from being written and forgotten.
+   - `casing/user_notesheets/Casing_Warm Up Page.md` — Daniel's real warm-up page,
      converted to Markdown 2026-08-29 with his authorization. Its four-item
      **HIGH YIELD CHECKLIST** (hypothesis at framework · horizontal the framework ·
      sign post the framework · set up the math before jumping in) is the fastest
@@ -95,7 +98,8 @@ If he asks for more, give more. Until then, three.
 
 ## Verification
 
-- [ ] Ledger and warm-up note were read this turn, not recalled.
+- [ ] `drill-queue.md` Open, and the warm-up note, were read this turn, not recalled.
+- [ ] Any open item with a near retest date was surfaced, or you said why not.
 - [ ] Exactly three items returned.
 - [ ] Each is a behavior he can execute, not an observation about the past.
 - [ ] The third maps to a stated focus area, or you said explicitly that none did.

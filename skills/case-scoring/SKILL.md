@@ -9,13 +9,13 @@ metadata:
   version: "0.1.0-draft"
   status: FIRST DRAFT — walkthrough with Daniel required before first real use
   category: casing
-  related_skills: [session-intake, post-case-loop, weakness-derivation, behavioral-scoring]
+  related_skills: [session-intake, post-case-taken, taken-case-debrief, weakness-derivation, behavioral-scoring]
   sources:
-    - "casing/study_guides/Casing_Prompt  CQ & Framework.pdf (Darden Consulting Club)"
-    - "casing/study_guides/Casing_Exhibits  Math.pdf"
+    - "casing/study_guides/Casing_Prompt CQ and Framework.pdf (Darden Consulting Club)"
+    - "casing/study_guides/Casing_Exhibits Math.pdf"
     - "casing/study_guides/Casing_Brainstorm+Rec.pdf"
     - "casing/study_guides/Casing_Case Camp Deck.pdf"
-    - "casing/notesheets/Casing_High Yield Notes.md"
+    - "casing/user_notesheets/Casing_High Yield Notes.md"
 category: casing
 ---
 

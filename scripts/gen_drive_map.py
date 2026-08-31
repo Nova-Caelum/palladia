@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Regenerate PallaDrive's DRIVE-MAP.md.
 
-SOUL.md points at `_system-files/DRIVE-MAP.md` as the authoritative map and
-explicitly does NOT carry a folder list itself — because a map baked into an
-identity file goes stale within days and gets trusted anyway. This script is
-what keeps that promise true.
+The authoritative map lives at `_meta/DRIVE-MAP.md`. SOUL.md explicitly does
+NOT carry a folder list itself — because a map baked into an identity file
+goes stale within days and gets trusted anyway. This script is what keeps
+that promise true.
 
 DERIVATION job (see cron-creator): no dedupe key. The idempotency contract is
 that running twice with no change to the drive produces a byte-identical file
@@ -40,6 +40,8 @@ def walk(root):
             continue
         files = []
         for f in sorted(filenames):
+            # Dotfiles are hidden deliberately (tool backups, editor state).
+            # Daniel 2026-08-31: "skip dot files, they're dot for a reason."
             if f in SKIP_FILES or f.startswith("."):
                 continue
             try:
@@ -100,7 +102,7 @@ def main():
     root = os.path.abspath(os.path.expanduser(a.root))
     if not os.path.isdir(root):
         sys.exit(f"not a directory: {root}")
-    out_path = a.output or os.path.join(root, "_system-files", "DRIVE-MAP.md")
+    out_path = a.output or os.path.join(root, "_meta", "DRIVE-MAP.md")
     text = render(root, walk(root))
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w") as f:

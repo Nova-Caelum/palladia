@@ -102,9 +102,17 @@ You need the catalog path and the case query. If either is missing, ask one
 concise question — do not browse the catalog to find out.
 
 `[VERIFIED 2026-08-29]` Catalogs live at
-`casing/casebooks_catalogs/` and follow `Catalog_<School>-casebook-<years>.pdf`.
-Eight are present. Match case-insensitively: one is `Catalog_johnson-…` in
-lowercase where the rest are capitalized.
+`casing/casebooks_catalogs/`, named `Catalog_<School>-casebook-<years>.pdf`.
+
+**List the directory. Never rely on a remembered count or a remembered set.**
+Catalogs get added — the collection grew by two during a single day on
+2026-08-30, and any skill that had memorized the old set would have silently
+skipped the new ones.
+
+Match case-insensitively; capitalization is inconsistent across filenames. A
+school may appear in more than one year (`Darden-casebook-2023-24` and
+`Darden-casebook-2024-25` both exist), so resolving "the Darden casebook" to a
+single file is **not** safe — confirm which year when more than one matches.
 
 If Daniel names a school rather than a filename ("the Darden casebook"), resolve
 it against the filenames and confirm which you picked if more than one matches.
@@ -132,16 +140,17 @@ self-study and for a partner giving the case.
 ### 4. Write the artifact
 
 `[VERIFIED 2026-08-29]` Destination:
-`casing/casebooks_catalogs/individual_cases/` — note it is nested **inside**
-`casebooks_catalogs/`, not a sibling of it.
+`casing/individual_cases/` — a SIBLING of `casebooks_catalogs/`, not nested
+inside it. `[CORRECTED 2026-08-30]` The previous text said the opposite and did
+not match disk; the plugin now writes here and refuses anywhere else.
 
 Create one folder per case:
 
 ```
 individual_cases/
   <Case Name>/
-    <Case Name>.pdf     ← new PDF, only this case's pages
-    index.md            ← findable metadata
+    Case_<Case Name>_<School><Years>.pdf   ← only this case's pages
+    index.md                                ← findable metadata
 ```
 
 `[INFERENCE]` Folder naming follows Daniel's existing convention in
@@ -164,7 +173,7 @@ inventing parallel terms — his properties, his value sets:
 
 ```yaml
 ---
-title: "<Case Name>"
+title: "Case_<Case Name>_<School><Years>"   # e.g. Case_HR Co_Darden2024-2025
 source_catalog: "Catalog_Darden-casebook-2024-25.pdf"
 source_pages_physical: "112-119"
 source_pages_printed: "104-111"
@@ -207,7 +216,7 @@ what you could not confirm.
 - **Reading the catalog "just to check."** There is no small read of a 300-page
   catalog. Use the bounded tool or ask.
 - **Assuming a case name is unique.** Ask when ambiguous.
-- **Writing into `notesheets/` or `study_guides/`.** Those are Daniel's. This
+- **Writing into `user_notesheets/` or `study_guides/`.** Those are Daniel's. This
   skill writes to `individual_cases/` and nowhere else.
 
 ## Verification
@@ -228,8 +237,11 @@ If a check fails, say which one. Do not report a partial extraction as done.
 
 ## Open — needs Daniel
 
-Three path assumptions this skill hard-codes are unconfirmed: that
-`individual_cases/` stays nested inside `casebooks_catalogs/`, the folder-naming
-convention, and whether an extracted case should be cross-linked from its
-`casing-session_log/` note when Daniel later cases it. Detail in
-`PallaDriveFolders_Palladia_ChiefPM_2026-08-29.md` §5.
+`[RESOLVED 2026-08-30]` Placement and naming are settled by Daniel: the folder
+is `casing/individual_cases/<Case Name>/`, holding
+`Case_<Case Name>_<School><Years>.pdf` and `index.md`. **`HR Co` is the
+reference to match.** The plugin derives the school/years slug from the catalog
+filename, so it is not a judgment call.
+
+Still open: whether an extracted case should be cross-linked from its
+`casing-session_log/` note when Daniel later cases it.

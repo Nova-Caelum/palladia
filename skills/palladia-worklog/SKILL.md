@@ -34,16 +34,16 @@ history. The worklog can.
 frontmatter across the folder and renders it as a sortable, filterable table, so
 there is no separate database file to maintain and nothing to drift out of sync.
 
-Location: `_system-files/worklog_entries/` inside PallaDrive.
+Location: `_meta/worklog_entries/` inside PallaDrive.
 
 **Supporting resources, all created 2026-08-29:**
 
 | Path | What it is |
 |---|---|
-| `_system-files/worklog_entries/` | The entries folder. **Exists** — write here. |
-| `_system-files/Worklog.base` | The Obsidian Base that renders the folder as a table. Four views: All entries · Last 7 days · By type · Scored reps. |
-| `_system-files/templates/Worklog Entry.md` | Entry template carrying the frontmatter contract. |
-| `_system-files/canonical/Bases-Reference_DRAFT.md` | How Bases work, and what is still unconfirmed about them. |
+| `_meta/worklog_entries/` | The entries folder. **Exists** — write here. |
+| `_meta/Worklog.base` | The Obsidian Base that renders the folder as a table. Four views: All entries · Last 7 days · By type · Scored reps. |
+| `_meta/template_library/Worklog_Entry_template.md` | Entry template carrying the frontmatter contract. |
+| `_system-files/reference_docs/Bases-Reference_DRAFT.md` | How Bases work, and what is still unconfirmed about them. |
 
 > **The Base is a view, not a store.** `Worklog.base` reads the frontmatter of the notes in `worklog_entries/` and renders them. You never write "into" the Base — you write a note with correct frontmatter into the folder, and it appears as a row. If a column shows empty, your frontmatter key is missing or misspelled; the Base is reporting honestly.
 
@@ -115,7 +115,7 @@ instead of a spreadsheet.
 
 ## Append procedure
 
-1. **Name the file:** `_system-files/worklog_entries/YYYY-MM-DD-HHMM-<short-slug>.md`
+1. **Name the file:** `_meta/worklog_entries/YYYY-MM-DD-HHMM-<short-slug>.md`
    (e.g. `2026-08-30-1422-profitability-case-maya.md`). Timestamp-prefixed so the
    folder sorts chronologically without depending on frontmatter.
 2. **Write frontmatter first.** Fill every field that applies; omit fields that do
@@ -145,7 +145,7 @@ instead of a spreadsheet.
 
 After appending, confirm:
 
-- [ ] File exists at `_system-files/worklog_entries/` with the timestamp-prefixed name.
+- [ ] File exists at `_meta/worklog_entries/` with the timestamp-prefixed name.
 - [ ] Frontmatter parses — no unquoted colons, no multi-line scalars.
 - [ ] `summary` is one line and ≤280 characters.
 - [ ] `independence` is present if this was a scored rep.
@@ -153,6 +153,6 @@ After appending, confirm:
 
 ## Deferred
 
-Flat folder for now. Month-sharding (`_system-files/worklog_entries/2026-08/`) is the deferred
+Flat folder for now. Month-sharding (`_meta/worklog_entries/2026-08/`) is the deferred
 alternative and matters past a few thousand notes — it is a `mv` when it matters,
 so do not pre-optimize.

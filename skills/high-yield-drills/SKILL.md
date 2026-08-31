@@ -62,7 +62,7 @@ Everything else. Named explicitly so the gaps are visible rather than filled in
 by assumption:
 
 - ~~`[BLANK — needs Daniel: where does the high-yield sheet live, and what shape is it in?]`~~
-  **RESOLVED 2026-08-29.** It is `casing/notesheets/Casing_High Yield Notes.md`,
+  **RESOLVED 2026-08-29.** It is `casing/user_notesheets/Casing_High Yield Notes.md`,
   converted from PDF with Daniel's authorization (the `.pdf` beside it is the
   archival original — read the `.md`). Drillable material it contains: the
   five-stage timing guide · framework rules (MECE, signpost, horizontal→vertical→deep) ·
