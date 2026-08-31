@@ -13,7 +13,7 @@ metadata:
   license: "proprietary"
   platforms: [linux]
   tags: [weakness, ledger, trends, evidence, diagnosis]
-  related_skills: [post-case-loop, case-scoring, warm-up, high-yield-drills]
+  related_skills: [post-case-taken, taken-case-debrief, warm-up, high-yield-drills]
   provenance:
     origin: "Nova Caelum-authored"
     platform: "Hermes Agent (Nous Research) — palladia profile, olympus1"
@@ -43,7 +43,7 @@ the next unprompted case says what is still true.
 - The ledger is stale or missing.
 
 **Not for:** scoring one case (`case-scoring`), debriefing one session
-(`post-case-loop`), or generating drills once the weakness is already known
+(`taken-case-debrief`), or generating drills once the weakness is already known
 (`high-yield-drills`).
 
 ## Procedure
@@ -141,10 +141,31 @@ two to work on and explicitly park the rest.
 A long unranked list is the **exhaustive-critic failure**: it feels thorough,
 lowers confidence, and gives no executable next step.
 
-### 9. Attach a drill
+### 8b. Currency — a stopped pattern is resolved, not open
+
+`[MIGRATED from post-case-loop, retired 2026-08-30]` **Time matters.** A pattern
+that stopped appearing weeks ago is resolved, not open. For every promoted item
+say **when it last appeared**, and label it COOLING when the recent sessions are
+clean. A ledger that only accumulates becomes a list of things Daniel used to be
+bad at, and it stops being read.
+
+### 9. Attach a drill — and queue it
 
 Each promoted weakness gets one drill with a success criterion and a retest.
 A weakness with no drill is an observation, not a plan.
+
+**Write it to `_wiki/drill-queue.md`, under Open.** That file is the single home
+for open practice items; a drill left in this report dies with the report. Tag it
+`[palladia-derived]`, name the section rather than a whole case, and give it a
+retest date — an undated item is a note, not a drill.
+
+A promotion at 3 sightings is exactly the "correction has not transferred"
+signal that earns a **`coached-redo`** rather than a written note.
+
+Check Open before appending: if an item already covers this weakness, **update
+its retest date instead of adding a duplicate.** If Open already holds ~5 items,
+say so rather than quietly adding a sixth. **Never close an item yourself** —
+closing asserts a correction transferred, and that is Daniel's call.
 
 ## Pitfalls
 
@@ -173,4 +194,10 @@ Before returning:
 - [ ] Any reversed weakness reported as resolved, not weak.
 - [ ] One or two bottlenecks named; the rest explicitly parked.
 - [ ] Each promoted weakness has a drill, success criterion, and retest.
+- [ ] Every drill was written to `_wiki/drill-queue.md` Open, tagged
+      `[palladia-derived]`, with a retest date — not left in this report.
+- [ ] Open was checked for an existing item before appending a duplicate.
+- [ ] No queue item was closed without Daniel's confirmation.
+- [ ] Every promoted item states when it last appeared; stopped patterns labelled
+      COOLING rather than left open.
 - [ ] No invented schema; no composite score.

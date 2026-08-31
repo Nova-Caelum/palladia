@@ -333,10 +333,10 @@ head -5 /home/daniel/obsidian-vaults/palladrive/_system-files/primer/PRIMER.md
 
 ```bash
 mkdir -p "$P/bin"
-cp /home/daniel/obsidian-vaults/palladrive/_system-files/scripts/gen_drive_map.py "$P/bin/"
-python3 /home/daniel/obsidian-vaults/palladrive/_system-files/scripts/gen_drive_map.py \
+cp /home/daniel/obsidian-vaults/palladrive/_system-files/scripts_library/gen_drive_map.py "$P/bin/"
+python3 /home/daniel/obsidian-vaults/palladrive/_system-files/scripts_library/gen_drive_map.py \
         /home/daniel/obsidian-vaults/palladrive
-grep -m1 generated /home/daniel/obsidian-vaults/palladrive/_system-files/DRIVE-MAP.md
+grep -m1 generated /home/daniel/obsidian-vaults/palladrive/_meta/DRIVE-MAP.md
 ```
 
 | Gate | Pass | On fail |

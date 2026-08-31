@@ -32,7 +32,7 @@ category: casing
 > corrected against reality. Two things are deliberately unfinished:
 >
 > - **The session-entry schema is now SETTLED.** `[VERIFIED 2026-08-29]` The
->   template at `_system-files/templates/case-session-entry.md` is the shape.
+>   template at `_meta/template_library/case-session-entry.md` is the shape.
 >   Populate from it; do not invent a shape per run.
 > - **The Granola MCP is not installed.** Steps 4–6 below are unrunnable today.
 >
@@ -74,8 +74,8 @@ already-logged session, or re-filing something already in the session log.
 | Artifact | Location |
 |---|---|
 | Session entry | `casing/casing-session_log/` |
-| Entry template | `_system-files/templates/case-session-entry.md` |
-| Case Log Base | `casing/Case Log.base` — renders the folder as tabs |
+| Entry template | `_meta/template_library/case-session-entry.md` |
+| Case Log Base | `Case Log.base` — renders the folder as tabs |
 | Recording | `recordings/` — **top level, not under `casing/`** |
 | Unrouted arrivals | `_inbox/` |
 
@@ -134,7 +134,7 @@ the rest, and reusing it means the new record sorts alongside the old ones:
 ### 2. Create the session entry
 
 **Copy the template**, do not compose frontmatter from memory:
-`_system-files/templates/case-session-entry.md`. It carries every field with a
+`_meta/template_library/case-session-entry.md`. It carries every field with a
 comment stating its allowed values. `[VERIFIED 2026-08-29]`
 
 Write to `casing/casing-session_log/` as `YYYY-MM-DD_Case Name_Activity.md` —

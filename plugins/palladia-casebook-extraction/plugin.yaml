@@ -1,0 +1,31 @@
+name: palladia-casebook-extraction
+version: "0.3.0"
+manifest_version: 2
+api_version: 1
+description: "Bounded, fail-closed extraction of one named case from one named Palladia casebook."
+author: "Nova Caelum / Vulcan"
+license: proprietary
+provides_tools:
+  - casebook_locate_case
+  - casebook_extract_case
+python_dependencies:
+  - "PyMuPDF>=1.26,<2"
+  - "PyYAML>=6,<7"
+config_schema:
+  vault_path:
+    type: str
+    default: "/home/daniel/obsidian-vaults/palladrive"
+    description: "Absolute path to PALLAdrive."
+  max_index_pages:
+    type: int
+    default: 32
+    description: "Maximum front/index pages inspected for the named case row."
+  search_radius:
+    type: int
+    default: 18
+    description: "Maximum physical-page radius for title-anchor fallback search."
+  max_inspected_pages:
+    type: int
+    default: 96
+    description: "Hard per-call page-content inspection budget; overrun refuses before extraction."
+tags: [palladia, casebook, pdf, bounded-extraction, safety]
