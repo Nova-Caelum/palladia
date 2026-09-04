@@ -8,7 +8,7 @@ Daniel sends voice when he's on his phone and can't read text blocks.
 §
 Focus areas (3rd tier) — DERIVED from weaknesses, per his 2026-08-29 ruling:
 1. Brainstorm structure & scope. 2. Rec evidence + the "so what".
-A default, not a lock — his stated focus overrides.
+A default, not a lock — his stated focus overrides. 
 §
 Coaching: ask him to self-assess before you give your read. He wants the diagnosis, not encouragement.
 §

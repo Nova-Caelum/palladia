@@ -12,12 +12,12 @@
 <p align="center">
   <img alt="status" src="https://img.shields.io/badge/status-in%20development-E8A33D?style=flat-square">
   <img alt="runtime" src="https://img.shields.io/badge/runtime-launched-8C8C8C?style=flat-square">
-  <img alt="updated" src="https://img.shields.io/badge/last%20updated-2026--08--29-1E3A5F?style=flat-square">
+  <img alt="updated" src="https://img.shields.io/badge/last%20updated-2026--09--04-1E3A5F?style=flat-square">
 </p>
 
 ---
 
-> ### 🚧 In development — 2026-08-29
+> ### 🚧 In development — 2026-09-04
 >
 > **Nothing in this repository is running at production level. Platform is in alpha and still active development
 
@@ -58,7 +58,8 @@ This repository is that package. Every file was written, audited, adversarially 
 | Path | What it holds |
 |---|---|
 | `identity/` | `SOUL.md` (who she is, how she reasons, what she refuses), `profile.yaml`, and the `MEMORY.md` / `USER.md` **seeds** — agent-owned after first install, never overwritten again |
-| `skills/` | 16 purpose-built skills across `casing`, `discipline`, `palladia`, `automation`, `creative`, `software-development` |
+| `skills/` | 20 purpose-built skills across `casing`, `discipline`, `palladia`, `automation`, `creative`, `software-development` |
+| `hooks/driveguard-epoch/` | Gateway hook — sole writer of the persistent monotonic `bridge_epoch`. Installs to `~/.hermes/hooks/`, not a plugin |
 | `plugins/palladia-primer/` | The context-injection plugin. `pre_llm_call`, first-turn-gated, 15/15 tests |
 | `config/` | Desired-state **delta specification** — only settings that must differ from a default profile, each with its justification. Never copied over a live `config.yaml` |
 | `reference/` | `SELF-MANAGEMENT.md` — read from the drive at runtime, not installed |
@@ -93,7 +94,7 @@ It **fails loud, not soft.** Hermes logs and *skips* a hook that raises, which w
 |---|---|
 | **Package** | Reviewed, corrected, hash-pinned — `docs/PROMOTION-MANIFEST.md` |
 | **Runtime** | **Not launched.** Rehabilitation runbook specified, not executed |
-| **Skills** | 16 custom (here) + 17 inherited platform skills = 33 declared |
+| **Skills** | 20 custom (here) + 17 inherited platform skills = 37 declared |
 | **Plugin** | v0.2.0, 15/15 tests, not yet deployed or enabled |
 | **Working drive** | Live, bidirectional sync verified |
 | **Open** | Transcript-ingest MCP untested · image MCP not installed · `casebook-case-extract` needs a bounded extraction tool · Bases render unconfirmed · casebook guard hook is v2 |
@@ -121,5 +122,5 @@ A few of these generalize past this agent, and they are the reason the package i
 </p>
 
 <p align="center">
-  <sub><strong>Nova Caelum &amp; Co.</strong> · in development · last updated 2026-08-29</sub>
+  <sub><strong>Nova Caelum &amp; Co.</strong> · in development · last updated 2026-09-04</sub>
 </p>

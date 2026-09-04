@@ -87,6 +87,54 @@ never let one direction's transcript land in the other's file.**
 When that date already holds a session in the other direction, both live in the
 same dated folder — they are one sitting with two halves, not two sittings.
 
+### 3a · Large-transcript gate — split capture from judgment at 35 KB
+
+`[OBSERVED 2026-08-31 — Will / HRCO given-side run; shared failure mode]` A
+43,891-character Granola transcript caused an all-in-one capture → evaluation
+run to time out before any artifact was written. Daniel set the guardrail at
+roughly 80% of that size: **35,000 characters (~35 KB for mostly ASCII
+transcript text).** The same context risk applies on the taken side.
+
+After retrieval, measure the transcript payload before doing any evaluation work.
+
+- **Below 35,000 characters:** the normal end-to-end run is allowed.
+- **At or above 35,000 characters:** capture is a separate bounded stage. Do not
+  load the case PDF, five phase pages, weakness record, eval template, or case-log
+  template in the same context as the Granola pull. Write and verify the recording
+  first, then start Part 2 in a fresh stage from the saved file.
+- In Part 2, read the saved transcript in chunks of at most **12,000 characters**,
+  split only at complete speaker-turn boundaries. Never split inside a turn and
+  never replace a chunk with a summary.
+- Record chunk ranges in working notes and verify there is no gap or overlap
+  before filling the attestation or writing `[P]` content.
+
+Granola does not expose ranged transcript retrieval. At ≥35 KB, **do not ask the
+reasoning model to transform or write the MCP response** — even a capture-only
+model stage can time out before its first write.
+
+`[VERIFIED 2026-08-31 — Will / HRCO; then Will and Chris taken captures]` Hermes
+persists the complete MCP tool result before the next model call in the active
+Palladia profile's local session store (`state.db`, `messages` table). Use a
+deterministic script to:
+
+1. select the latest `mcp__granola__get_meeting_transcript` and
+   `mcp__granola__get_meetings` tool rows containing the exact meeting UUID;
+2. JSON-decode the stored tool wrapper and transcript payload mechanically;
+3. split only on source speaker labels and replace `Me` / `Them` with the named
+   speakers;
+4. write the recording directly; and
+5. reconstruct the source transcript from the written turns and require an
+   **exact character-for-character match** with the decoded Granola transcript.
+
+The local store is a recovery surface, not coaching evidence: read it only to
+recover the already-returned MCP payload. Do not modify the database. If Granola
+returned an undifferentiated stream, preserve it as such and document the
+speaker-attribution limit; never invent turns. If the exact-match check fails,
+the capture is invalid and Part 2 does not begin.
+
+Only after that mechanical capture verifies should Part 2 start in a fresh stage
+from chunked reads of the saved file.
+
 ### 4 · Fill the recording file
 
 Write to **`session-recording_<Partner><YYYYMMDD>_Taken.md`**.
@@ -123,7 +171,7 @@ it is evidence, and Part 2 will be written against it.
 
 ### 5 · Keep assessment out of this file
 
-Scores, self-assessment, independence, feedback, and takeaways **do not belong
+Scores, self-assessment, feedback, and takeaways **do not belong
 in the recording document.** They go to the taken-side eval sheet.
 
 This separation is not cosmetic. The recording is *evidence*; the eval is
@@ -148,6 +196,30 @@ Then continue to Part 2.
 Target: `taken-case_eval-<Partner><YYYYMMDD>.md`, from `taken-case_eval_TEMPLATE.md`
 in the folder template.
 
+### Surgical generation rule — one section per write
+
+`[OBSERVED 2026-08-31 — Will and Chris taken evaluations]` Chunked evidence
+reading succeeded, but whole-evaluation generation timed out before any file was
+written. For any transcript ≥35 KB—or whenever a whole-evaluation generation
+fails—build the evaluation incrementally:
+
+1. Copy the complete template to the destination **once**.
+2. Fill §0 attestation first and §1 self-assessment second; verify both gates
+   before any `[P]` section.
+3. Generate and patch one bounded section per call: §2 reviewer feedback, each
+   of the five phase subsections separately, §4 divergence,
+   §5 takeaways/proposals, §6 drills, then §7 routing.
+4. Use targeted `patch` replacements anchored on the unique section heading and
+   its placeholder. Never rewrite the whole file after the initial copy.
+5. Read back each patched section immediately. A later failure leaves prior
+   sections intact and unresolved placeholders identify the exact resume point.
+6. Only after every section is present run whole-document validation for voice
+   tags, tier ratings, categorical-only performance vocabulary, help level,
+   attestation, and drills.
+
+Do not assemble section fragments by overwriting the destination. The evaluation
+is one stable container; every addition after creation is surgical.
+
 **Daniel is the subject here, not the assessor.**
 
 The three voices are **not weighted equally, and yours is last:**
@@ -161,6 +233,16 @@ The three voices are **not weighted equally, and yours is last:**
 **When your analysis disagrees with the reviewer, the reviewer wins** — unless the
 transcript holds a specific, quotable contradiction, in which case surface both
 rather than picking a side.
+
+#### Authority and high-caliber reviewers
+
+Daniel may explicitly set `Reviewer calibration: authority` or `high-caliber peer`.
+
+- **Authority:** eyewitness and technical feedback both receive exceptional weight and may reopen a cooling weakness or establish the priority intervention when behaviorally specific. The case source still controls a direct factual contradiction.
+- **High-caliber peer:** above an ordinary peer and heavily weighted; technical claims are still checked against the case source and baseline.
+- **Named calibration, Daniel-set 2026-09-01:** Eric Sodero is `authority`—one of the top three casing authorities at Darden. Ning is `high-caliber peer`, the only current-cycle reviewer Daniel identified as close to Eric's caliber, but below Eric.
+
+Authority affects priority and confidence, not sighting arithmetic: one session remains one sighting.
 
 #### The exception — a less-experienced reviewer
 
@@ -316,14 +398,15 @@ Same for a `[P]`/`[R]` split: **name it, do not resolve it in your own favor.**
 The reviewer holds the higher weight, so the honest form is *"the reviewer said
 X; the transcript also shows Y"* — never *"the reviewer was wrong."*
 
-### 15 · Independence, then drills
+### 15 · Drills
 
-Set Independence for the whole case and justify it from the transcript. A correct
-answer after three hints is not an independent answer.
-
-Then write **one or two drills**, each with a success criterion and a retest
+Write **one or two drills**, each with a success criterion and a retest
 date. If Daniel finishes reading and does not know what to practice next, the
 eval failed regardless of how good the analysis was.
+
+### 15b · Remove template-only authoring comments
+
+Before routing the completed evaluation, remove every HTML authoring comment copied from the template (`<!-- ... -->`). These instructions belong in the template, not in Daniel's final reading artifact, and can appear as extensive grey text in Obsidian's editor. Preserve the attestation, self-assessment, all three voice tags, tier ratings, help levels, drills, and routing fields. Verify a search for `<!--|-->` returns zero matches in the final evaluation.
 
 ## Part 3 — Route it back
 
@@ -335,12 +418,16 @@ The eval is written. Now make it survive the session that produced it.
 `_meta/template_library/case-session-entry.md`. **The `_Taken` suffix is
 required.**
 
+**Copy the whole template, not only its frontmatter.** Preserve the template's
+`## Sync` button block verbatim. Custom session prose may replace the instructional
+comment or be added above the button, but it must never replace or omit the button.
+A frontmatter-valid note without the sync block is incomplete.
+
 Unlike a Given entry, these three are **populated, not blank**:
 
 | Field | Value |
 |---|---|
 | `Overall Performance` | Bad · Fine · Good · Great · Perfect — Daniel's word, never a number |
-| `Independence` | carried from eval §5 |
 | `Counter` | running tally of cases **taken** — derive as max+1 over date-sorted Taken entries |
 
 `(Growth) Feedback` **is the weakness record** — `weakness-derivation` reads this
@@ -350,6 +437,34 @@ line-by-line instead of synthesizing to a so-what" is usable.
 Populate `Weaknesses hit`, and record `Top of mind` as hit/missed against the
 Dashboard's six-item list. Leave anything the evidence does not support blank —
 a blank is honest, a guess corrupts every count built on it.
+
+**Exception — the three difficulty fields are a required gate.** `Difficulty`,
+`Qual Diff` and `Quant Diff` are the casebook's *published* ratings, not how the
+case felt and not how Daniel performed. "Blank is honest" does not apply to them —
+go and look. Source order: the extracted case PDF, then the exact casebook edition
+(bounded lookup — **never read a casebook whole**), then the reviewer's own words
+in the transcript, then an existing entry for the same case in the same edition.
+
+**Search the transcript for it every time — it is frequently spoken aloud.** Daniel
+routinely asks the reviewer what difficulty the case was, usually near the end of
+the session, and the reviewer is normally reading it straight off the casebook page.
+Search the end-of-session exchange for that question and capture the answer verbatim.
+When the reviewer states a rating explicitly, that is an authoritative source, not a
+fallback — and if the reviewer also interprets it ("quant 8, that's a hard one"),
+their interpretation beats the arithmetic in the mapping guide.
+
+Scales vary — 1–3, 1–5, 1–10, words, stars. Convert every one into Daniel's five
+bands using `_system-files/reference_docs/DifficultyMapping.md`. Read it; do not
+improvise a conversion.
+
+Finish in exactly one of two states:
+- **Sourced** — all three filled, plus one line in the note body:
+  `Difficulty source: Stern 25-26 case header — Quant 8/10, Structure 9/10 → M/H, Hard`
+- **Unavailable** — marked `unresolved` with the reason inline, and flagged to
+  Daniel in one line of your closing report.
+
+A silent blank is not a legal outcome. Sourcing the Sauce and Shisha both shipped
+blank this way, and both were recoverable from the casebook.
 
 **If the `Counter` sequence has a gap — a Taken entry with no `Counter`, or a
 skipped number — STOP AND ASK.** Do not silently renumber, and do not pick the
@@ -363,6 +478,18 @@ genuinely unclear. `[RELAXED 2026-08-30]` The old rule said always ask; asking
 about something the recording plainly shows just spends Daniel's attention.
 
 If this session deliberately retested an earlier one, set `Retest of`.
+
+### 16b · Sync the exact case-log note to Google Sheet — REQUIRED
+
+After the `_Taken` case-log note passes validation, run its sync rather than merely preserving the button.
+
+1. Re-read the exact new `_Taken` note and confirm `Synced` is not already `Y`; the downstream sheet append has no deduplication.
+2. Require the full log gates first: sourced difficulty, populated Overall Performance and Counter, one Sync block, and complete payload identity.
+3. Execute `_meta/template_library/_sync-this-case.md` against that exact note. If Obsidian/Templater is unavailable, perform the same POST using the script's field mapping and webhook reference; never substitute “most recent note.”
+4. Treat only HTTP 2xx as success. On success, set `Synced: Y` and `Synced at:` to the real ISO timestamp, then re-read the note. On any other status, leave both fields unchanged and report the failure.
+5. Do not describe the case as synced from the existence of the button or from a request being attempted. The HTTP result and updated frontmatter are the evidence.
+
+Daniel's 2026-09-01 instruction makes this a standing step of the post-case workflow; no separate per-case confirmation is required.
 
 ### 17 · Queue a drill if it earned one
 
@@ -436,6 +563,9 @@ this skill's work is complete without it.
 - **Reporting success on a short union sweep.** The response looks clean.
 - **Analyzing before the attestation is filled.** The reading step is the one
   that gets skipped, and it is the one that makes the analysis correct.
+- **Running capture and assessment in one context for a transcript ≥35 KB.**
+  The shared failure mode timed out before any artifact was written. Finish and
+  verify capture first; assess in a fresh stage from chunked reads.
 - **Writing `[P]` content while section 1 is empty.** Hard stop.
 - **Scoring Tier 3 as `missed` during cold start.** There is no standard yet to
   miss. That reads as a failure and it is not one.
@@ -478,10 +608,15 @@ this skill's work is complete without it.
 - [ ] `grep -cE '^\*\*(Me|Them):' <file>` returns **0**.
 - [ ] Header carries a real Granola UUID and a status matching what happened.
 - [ ] No assessment content was written into the recording file.
+- [ ] For transcripts ≥35 KB, capture completed and was verified before Part 2 began; Part 2 chunk ranges cover the saved transcript without gaps or overlaps.
+- [ ] Final evaluation contains zero `<!--` or `-->` template markers.
 - [ ] Attestation section 0 is complete, naming **one specific item per source**.
 - [ ] Case PDF was opened, or its absence is stated in the attestation.
 - [ ] Daniel's self-assessment was present **before** any `[P]` line was written —
       sourced from the transcript if he gave it in-session.
+- [ ] For section-wise generation, the destination template was created once;
+      every later write was a targeted section patch, each section was read back,
+      and no unresolved placeholder remains in a required section.
 - [ ] Any reviewer fact contradicted by the case materials is cited, and only the
       dependent `[R]` lines are marked `[R–disqualified]`.
 - [ ] Every phase the case reached carries all three tier ratings + commentary.
@@ -495,11 +630,13 @@ this skill's work is complete without it.
 - [ ] `Reviewer calibration` came from Daniel, not from your own inference.
 - [ ] Under `developing`: eyewitness `[R]` lines kept full weight; only technical
       claims were checked against the wiki.
-- [ ] Independence set for the whole case and justified from the transcript.
 - [ ] At least one drill with a success criterion and a retest date.
 - [ ] Case-log entry exists with the `_Taken` suffix and validates against
       `case-session-entry.md` — no missing fields, no invented ones.
-- [ ] `Overall Performance`, `Independence`, and `Counter` are populated.
+- [ ] Case-log body contains exactly one `## Sync` section and the command
+      `Templater: Insert _sync-this-case`; frontmatter-only validation is insufficient.
+- [ ] Case-log sync returned HTTP 2xx; the exact `_Taken` note now has `Synced: Y` and a real `Synced at` timestamp. If not, the failure was reported and the fields remain unchanged.
+- [ ] `Overall Performance` and `Counter` are populated.
 - [ ] `Counter` was derived from the log, not copied — and any gap in the
       sequence was escalated rather than papered over.
 - [ ] `(Growth) Feedback` is behavioral enough for `weakness-derivation` to consume.
