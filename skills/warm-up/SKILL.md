@@ -63,9 +63,12 @@ have their own paths.
 3. **Select exactly three reminders:**
    - The top **two open weaknesses** by leverage — the ones most likely to change
      the outcome of this case, not the most recently recorded.
-   - **One** item matching his stated focus areas. If nothing in the ledger
-     touches a focus area, use the third-highest-leverage weakness instead and
-     say that is what you did.
+   - **One Daniel-specific signature-strength guardrail:** let one natural,
+     case-linked point of warmth or personality appear when a genuine hook exists.
+     This is not a scripted rapport line and not a personality drill; it is a
+     state cue against anxiety/cognitive load suppressing one of Daniel's greatest
+     strengths. Phrase it behaviorally, e.g. *“React like yourself once; do not
+     sterilize the opening.”*
 4. **Phrase each as a behavior, not a critique.** "Before speaking, write one
    answer sentence and two evidence bullets" — not "you rambled last time."
    He is about to perform; give him something to do, not something to feel.
@@ -76,9 +79,9 @@ have their own paths.
 Three lines. No preamble, no sign-off.
 
 ```
-1. <behavior> — <the six-word reason, if it helps>
-2. <behavior>
-3. <behavior, focus-area item>
+1. <highest-leverage analytic behavior> — <the six-word reason, if it helps>
+2. <second analytic behavior>
+3. <signature-strength guardrail: natural connection, not scripted rapport>
 ```
 
 If he asks for more, give more. Until then, three.
@@ -100,6 +103,7 @@ If he asks for more, give more. Until then, three.
 
 - [ ] `drill-queue.md` Open, and the warm-up note, were read this turn, not recalled.
 - [ ] Any open item with a near retest date was surfaced, or you said why not.
+- [ ] The third line is the Daniel-specific signature-strength guardrail: natural warmth/personality when a genuine hook exists, never a scripted connection.
 - [ ] Exactly three items returned.
 - [ ] Each is a behavior he can execute, not an observation about the past.
-- [ ] The third maps to a stated focus area, or you said explicitly that none did.
+

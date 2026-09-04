@@ -161,9 +161,9 @@ The first Base in this vault. It renders `_meta/worklog_entries/` as Palladia's 
 
 - **File-level filter pins the folder.** `file.inFolder("_meta/worklog_entries")` plus `file.ext == "md"` means it can never accidentally pick up case notes from `casing/casing-session_log/`, which also carry frontmatter.
 - **A formula enforces a rule that would otherwise rot.** `summary_overflow` shows `OVER by N` when a summary exceeds 280 characters. A cap nobody can see is a cap nobody keeps.
-- **Four views, each earning its place:** *All entries* (the default), *Last 7 days* (the "what did we do this week" cut), *By type* (shows where effort is actually going), *Scored reps* (case + behavioral scores only, with `independence` prominent — because a right answer after three hints is not a right answer, and a table that hides help level inflates progress).
+- **Four views, each earning its place:** *All entries* (the default), *Last 7 days* (the "what did we do this week" cut), *By type* (shows where effort is actually going), *Scored reps* (case + behavioral scores only).
 
-**Frontmatter contract it reads:** `created`, `author`, `project`, `type`, `summary` (≤280), `tags`, `case_id`, `dimensions`, `independence`. Full definitions live in `_meta/template_library/Worklog_Entry_template.md`.
+**Frontmatter contract it reads:** `created`, `author`, `project`, `type`, `summary` (≤280), `tags`, `case_id`, `dimensions`. Full definitions live in `_meta/template_library/Worklog_Entry_template.md`.
 
 ## 5. Placement conventions
 

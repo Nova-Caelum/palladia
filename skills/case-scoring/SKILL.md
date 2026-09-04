@@ -46,6 +46,29 @@ Daniel's own Case Camp material states the reason for the split directly:
 
 Factor 1 is the baseline. Factor 2 is the shine. Factor 3 is the growth.
 
+## Reviewer-calibrated evidence
+
+Daniel sets reviewer calibration; Palladia does not infer it.
+
+- `authority` — eyewitness and technical feedback receive exceptional weight; it can reopen a cooling weakness or set the next intervention. Case-source facts still control direct contradictions.
+- `high-caliber peer` — above ordinary peer and heavily weighted, with technical claims triangulated against the case source and baseline.
+- `peer` — default.
+- `developing` — eyewitness feedback retains full weight; technical judgments rank below the source and baseline.
+
+Named calibration from Daniel, 2026-09-01: **Eric Sodero = authority** (top-three Darden casing authority); **Ning = high-caliber peer**, below Eric.
+
+### Authority criteria incorporated from Eric's Craft Co review
+
+- **Prompt/CQ baseline:** lead the readback with every explicit client decision or question before supporting context. Dropping one part of a multi-part ask is a baseline miss.
+- **Framework baseline:** followability outranks novelty. Name all horizontal workstreams before vertical detail; each branch should support a substantial, distinct consultant workstream. A listener should be able to reproduce the top-level branches immediately.
+- **Framework Good → Great:** add case-specific color and use complexity only when it can be explained more clearly than the simple alternative. "Go for the eight, not the ten" is a risk-control rule, not permission for generic content.
+- **Opening Good → Great:** make a brief genuine personal connection when the case provides a natural hook; do not force one.
+- **Daniel-specific signature-strength rule:** for Daniel, warmth and relatability are major natural advantages, not optional polish. If a natural hook exists and the interviewer does not experience him as personable/relatable, record a Daniel-specific miss even if generic Prompt/CQ baseline is met. His stated root-cause prior is nerves/anxiety or cognitive load suppressing an automatic strength—not lack of connection skill. Diagnose the state trigger; do not prescribe generic personality practice.
+- **Exhibits/math Good → Great:** after fixing the full logic, scan for the shortest defensible route—contribution margin, common factors, combined fixed costs. Missing a shortcut is not a baseline math failure when setup, accuracy, narration, and implication remain sound.
+- **Exhibit recovery:** when axes or measures are ambiguous, state the exact ambiguity, ask one crisp clarification, then interpret confidently.
+- **Recommendation baseline:** answer decisively and carry the most decision-relevant calculated number. Do not replace the recommendation with "we would explore the trade-off" when evidence supports an action.
+- **Pushback:** hold a defensible position with evidence while acknowledging the alternative and naming what would change the view; neither collapse nor become rigid.
+
 ## When to Use
 
 - A mock case just finished and he wants a read.
@@ -122,16 +145,6 @@ Read his stated focus areas and the accumulated weakness record. Then:
 
 ---
 
-## Independence level — record it every time
-
-A correct answer after three hints is not an independent answer. For each
-substantive moment, record one of:
-
-`no help · neutral clarification · light prompt · directional hint · major scaffold · answer supplied`
-
-Without this, scores inflate as scaffolding quietly increases. This is the single
-most important guard in the skill.
-
 ## Feedback unit — seven parts, none optional
 
 1. **Observation** — exact and neutral. Quote it, timestamp it if you have one.
@@ -152,7 +165,7 @@ Render as three clearly separated blocks so any one can be suppressed or reweigh
 ```markdown
 ## Case: {title} — {date}
 Overall Performance: {Bad|Fine|Good|Great|Perfect}   ← Daniel's scale, no other scale
-Independence: {level}   Confidence: {low|medium|high}
+Confidence: {low|medium|high}
 
 ### 1 · Baseline
 {per stage: met / not met, with the quoted evidence for anything not met}
@@ -174,7 +187,7 @@ Use `Overall Performance` on Daniel's existing scale — **Bad · Fine · Good �
 - **Never emit a composite score.** No "7/10", no "82% ready". You have no calibration to real interview decisions and a number implies one.
 - **Never blend the three factors.** A great elevation moment does not offset a missed baseline item, and merging them hides which is which.
 - **One bottleneck, not twenty comments.** Name the one or two constraints that explain most of the downstream problems and explicitly park the rest.
-- **Do not invent frontmatter.** `[BLANK]` — the case-note schema has no slot for independence level or per-factor scoring. Hold these in the scoring output and the worklog entry until Daniel decides where they live.
+- **Do not invent frontmatter.** `[BLANK]` — the case-note schema has no slot for per-factor scoring. Hold it in the scoring output and the worklog entry until Daniel decides where it lives.
 - **His material outranks any general rubric.** Where a study guide and an outside source disagree, his wins, and you say which you used.
 
 ## Verification
@@ -182,7 +195,6 @@ Use `Overall Performance` on Daniel's existing scale — **Bad · Fine · Good �
 Before delivering a score, confirm:
 
 - [ ] All three factors rendered separately, including an empty factor 3.
-- [ ] Independence level recorded.
 - [ ] `Overall Performance` uses his five-value scale and nothing else.
 - [ ] No composite or numeric score anywhere in the output.
 - [ ] Every claim about performance quotes a moment from the source.

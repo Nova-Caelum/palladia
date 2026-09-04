@@ -101,6 +101,17 @@ feedback literally said. Never present your inference in the user's voice.
 - **2 sightings → WATCH**
 - **3 sightings → PROMOTED** — drives drills
 
+### 5b. Weight reviewer calibration without inflating counts
+
+One session remains one sighting. Reviewer authority changes **priority and confidence**, not counting arithmetic.
+
+- `authority` — a behaviorally specific current observation can reopen a cooling historical weakness or set the next intervention, even when lower-calibration recent notes are silent.
+- `high-caliber peer` — weight above ordinary peer, especially for interviewer experience and case craft.
+- `peer` — default.
+- `developing` — retain eyewitness value; check technical judgments against the source and baseline.
+
+Daniel sets the tier; Palladia never infers it. Named calibration from Daniel, 2026-09-01: Eric Sodero = `authority` (top-three Darden casing authority); Ning = `high-caliber peer`, below Eric.
+
 ### 6. Check currency before promoting — the rule that matters most
 
 **Raw count is not recency, and currency wins.**
@@ -190,6 +201,7 @@ Before returning:
 - [ ] Corpus date range reported; staleness labelled if present.
 - [ ] Every sighting carries a verbatim quote, case id, and date.
 - [ ] Root causes marked as inference.
+- [ ] Reviewer calibration affected priority/confidence but did not multiply a session's sighting count; named tiers came from Daniel, not inference.
 - [ ] Currency checked on every promoted item; COOLING and reversed items labelled.
 - [ ] Any reversed weakness reported as resolved, not weak.
 - [ ] One or two bottlenecks named; the rest explicitly parked.
