@@ -9,7 +9,7 @@
 
 The outward-facing view. Other people read it. Daniel: *"the field mapping isn't entirely 1:1, this is meant for others to view so it can be simpler."* The drive has 30 properties; the sheet has 12.
 
-**The omissions are the point.** Growth feedback, weakness counts, independence level, and top-of-mind misses are the private diagnostic record. They should never appear here, and a future sync must not "helpfully" add them.
+**The omissions are the point.** Growth feedback, weakness counts, and top-of-mind misses are the private diagnostic record. They should never appear here, and a future sync must not "helpfully" add them.
 
 ## Direct mappings
 
@@ -43,7 +43,7 @@ The outward-facing view. Other people read it. Daniel: *"the field mapping isn't
 
 ## Deliberately NOT projected
 
-`(Good) Feedback` · `(Growth) Feedback` · `Qual Diff` · `Quant Diff` · `Independence` · `Weaknesses hit` · `Top of mind` · `Recording` · `Transcript` · `Retest of` · `Behavioral` · `Casing` · `Company Style` · `Time (min)` · `ID` · `notion_id`
+`(Good) Feedback` · `(Growth) Feedback` · `Qual Diff` · `Quant Diff` · `Weaknesses hit` · `Top of mind` · `Recording` · `Transcript` · `Retest of` · `Behavioral` · `Casing` · `Company Style` · `Time (min)` · `ID` · `notion_id`
 
 ## Current state — read 2026-08-29
 

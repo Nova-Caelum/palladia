@@ -85,17 +85,6 @@ Thresholds: 2 sightings → watch list. 3 → promoted to the weakness record.
 
 ---
 
-## Independence level
-
-Record it, same ladder as `case-scoring`:
-
-`no help · neutral clarification · light prompt · directional hint · major scaffold · answer supplied`
-
-It matters more here, not less. A story he can only tell after you have prompted
-the structure is a story he cannot tell in the room. Note explicitly whether he
-produced the tradeoff and the learning unprompted — those are the two parts most
-often supplied by the coach and then mistaken for the candidate's own.
-
 ## Feedback unit — seven parts, none optional
 
 Observation → impact → standard → root-cause hypothesis (labelled as inference,
@@ -110,7 +99,7 @@ follow-ups fired at the end.
 ```markdown
 ## Behavioral: {story / question} — {date}
 Overall Performance: {Bad|Fine|Good|Great|Perfect}   ← Daniel's scale, no other scale
-Independence: {level}   Confidence: {low|medium|high}
+Confidence: {low|medium|high}
 
 ### 1 · Baseline
 {specificity · I-vs-we · decision visible · outcome · accuracy · answered the question}
@@ -145,6 +134,5 @@ Use `Overall Performance` on his existing scale — **Bad · Fine · Good · Gre
 - [ ] "I" vs "we" explicitly assessed — never skipped.
 - [ ] At least one follow-up probe actually fired and its result reported.
 - [ ] Nothing in the output is a fact he did not supply.
-- [ ] Independence recorded, including whether tradeoff and learning were unprompted.
 - [ ] `Overall Performance` on his five-value scale; no composite or numeric score.
 - [ ] Root-cause statements labelled as inference with confidence.

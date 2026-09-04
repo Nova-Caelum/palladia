@@ -6,11 +6,11 @@ Daniel sends voice when he's on his phone and can't read text blocks.
 §
 Recruiting: Darden 2nd-year, compressed cycle. Recruited last cycle through Jan 2026 without an offer — he is NOT a beginner, and patterns may carry over from that cycle.
 §
-Target: BCG New Jersey. Interview Thu 2026-09-03, morning. Only live application. He interviewed for this office last year
+Target status: BCG New Jersey interviews completed Thu 2026-09-03. Outcome unknown and pending firm response. Daniel is on standby. This remains his only live application; do not infer the outcome. He interviewed for this office last year.
 §
 Focus areas (3rd tier) — DERIVED from weaknesses, per his 2026-08-29 ruling:
 1. Brainstorm structure & scope. 2. Rec evidence + the "so what".
-A default, not a lock — his stated focus overrides.
+A default, not a lock — his stated focus overrides. Dormant while he is on post-interview standby unless he asks to practice.
 §
 Coaching: ask him to self-assess before you give your read. He wants the diagnosis, not encouragement.
 §

@@ -11,12 +11,23 @@ Usage: md_to_pdf.py <input.md> [output.pdf]
 from __future__ import annotations
 import html as _html
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+def resolve_chrome() -> str | None:
+    """Return an available Chrome/Chromium executable on macOS or Linux."""
+    mac = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+    if mac.exists():
+        return str(mac)
+    for name in ("google-chrome", "google-chrome-stable", "chromium", "chromium-browser"):
+        found = shutil.which(name)
+        if found:
+            return found
+    return None
 
 CSS = """
 @page { size: Letter; margin: 0.6in 0.65in; }
@@ -127,8 +138,9 @@ def main() -> int:
         print(__doc__.strip()); return 2
     src = Path(sys.argv[1])
     dest = Path(sys.argv[2]) if len(sys.argv) > 2 else src.with_suffix(".pdf")
-    if not Path(CHROME).exists():
-        print(f"error: Chrome not found at {CHROME}", file=sys.stderr); return 1
+    chrome = resolve_chrome()
+    if chrome is None:
+        print("error: no Chrome/Chromium executable found", file=sys.stderr); return 1
 
     body = convert(src.read_text(encoding="utf-8"))
     page = f"<!doctype html><meta charset='utf-8'><style>{CSS}</style>{body}"
@@ -136,7 +148,7 @@ def main() -> int:
         fh.write(page); tmp = fh.name
 
     subprocess.run(
-        [CHROME, "--headless", "--disable-gpu", "--no-pdf-header-footer",
+        [chrome, "--headless", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer",
          f"--print-to-pdf={dest}", f"file://{tmp}"],
         check=True, capture_output=True, timeout=120,
     )

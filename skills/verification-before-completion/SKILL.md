@@ -67,7 +67,7 @@ Skipping a step is not verifying faster. It is claiming without checking.
 | Transcript ingested | Confirm the file exists at the destination and is non-empty | Granola returned a response |
 | Session scored | Every dimension has an evidence citation with a timestamp or quote | A score was produced |
 | Weakness improved | The behavior appeared **unprompted** in a later realistic case | Better performance in the drill that trains it |
-| Drill passed | The stated success criterion met, at the stated independence level | "That was better" |
+| Drill passed | The stated success criterion met | "That was better" |
 | Process fact current | Primary source quoted, with retrieval date, for that firm/office/round | It was true last cycle |
 | Nothing was lost | Original source file still present and unmodified | You intended not to touch it |
 
@@ -99,4 +99,4 @@ Use `clarify` if Daniel is the one who can resolve it.
 
 ## Verification
 
-The final response names the check performed, the observed result, any remaining gap, and — where relevant — the independence level. **Evidence appears before the success wording, not after it.**
+The final response names the check performed, the observed result, and any remaining gap. **Evidence appears before the success wording, not after it.**
