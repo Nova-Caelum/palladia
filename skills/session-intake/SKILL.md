@@ -119,10 +119,6 @@ the rest, and reusing it means the new record sorts alongside the old ones:
 - `Behavioral` — `Y`/`N`. **Always ask.** Not inferable from a recording, and a
   single session is often both casing and behavioral — that is the whole reason
   these are two independent flags rather than one session-type field.
-- `Independence` — `no help` · `neutral clarification` · `light prompt` ·
-  `directional hint` · `major scaffold` · `answer supplied`. Ask it plainly.
-  A correct answer after three hints is not an independent answer, and without
-  this every performance rating drifts upward over time.
 - `Retest of` — if this session deliberately retested an earlier weakness, link
   that session. Optional, but it is what makes transfer observable.
 
@@ -131,11 +127,56 @@ the rest, and reusing it means the new record sorts alongside the old ones:
 > performance scale, and do not substitute our terms. Anything we add later
 > attaches alongside; it does not displace.
 
+#### Difficulty is a required gate — not a transcript field
+
+`Difficulty`, `Qual Diff` and `Quant Diff` describe the **published difficulty of
+the case**, not how it felt and not how Daniel performed. They are almost never in
+the transcript, so the "leave it empty if the transcript does not support it" rule
+further down does **not** apply to them. Go and look.
+
+That said — **the transcript often does have it, and you must check.** Daniel
+routinely asks the reviewer what difficulty the case was, usually near the end of
+the session, and the reviewer is normally reading it off the casebook page. A
+reviewer stating the rating explicitly is an authoritative source, not a fallback,
+and their own interpretation of it ("quant 8, that's a hard one") beats the
+arithmetic in the mapping guide.
+
+Source priority — take the first that yields a value:
+
+1. The extracted individual-case PDF — case header or interviewer guidance
+2. The exact casebook edition — TOC, case title page, interviewer page.
+   Bounded lookup only; **never read a casebook whole**
+3. The transcript — the reviewer's own words, especially the end-of-session
+   exchange where Daniel asks the difficulty
+4. An existing case-log entry for the **same case in the same casebook edition**
+
+Source scales differ — 1–3, 1–5, 1–10, words, stars. Convert every one of them to
+Daniel's five bands using **`_system-files/reference_docs/DifficultyMapping.md`**.
+That file carries the general rule (normalize to a 0–1 position, then bucket) plus
+worked tables for the common scales, so an unfamiliar scale still maps. Read it
+before converting; do not improvise a conversion.
+
+This gate ends in exactly one of two outcomes, never a third:
+
+- **Sourced** — all three fields carry a band, and one line in the note body records
+  where they came from and what was converted:
+  `Difficulty source: Stern 25-26 case header — Quant 8/10, Structure 9/10 → M/H, Hard`
+- **Unavailable** — the field is marked `unresolved` with the reason stated inline,
+  and flagged to Daniel in one line at the end of the case.
+
+**A silent blank is not a valid outcome.** Two of the last eight entries went out
+blank this way; both were recoverable from the casebook.
+
 ### 2. Create the session entry
 
-**Copy the template**, do not compose frontmatter from memory:
+**Copy the entire template**, do not compose frontmatter from memory:
 `_meta/template_library/case-session-entry.md`. It carries every field with a
 comment stating its allowed values. `[VERIFIED 2026-08-29]`
+
+The entire template includes the body-level `## Sync` button. Preserve that
+block verbatim, including `Templater: Insert _sync-this-case`. A note whose
+frontmatter validates but whose sync block is missing is incomplete. Custom
+session prose belongs above the sync block; it does not replace it.
 
 Write to `casing/casing-session_log/` as `YYYY-MM-DD_Case Name_Activity.md` —
 e.g. `2026-09-02_Great Burger_Taken.md`. The `Activity` suffix disambiguates
@@ -145,7 +186,7 @@ repeat cases; Daniel has run the same case twice on different dates before.
 > rename them** — wikilinks may point at them, and that is Daniel's call.
 
 Leave a field blank rather than guessing it. Every count built on this data
-inherits any value you invent, and a fabricated `Independence` or `Behavioral`
+inherits any value you invent, and a fabricated `Behavioral`
 corrupts the exact measurements those fields exist to make possible.
 
 ### 3. Pull the media from Granola
@@ -188,7 +229,9 @@ Rules while filling:
   corrupts every downstream diagnosis.
 - Quote the partner rather than paraphrasing. His words carry the calibration.
 - Leave anything the transcript does not support **empty**, and say what you
-  could not determine.
+  could not determine. **Exception: the three difficulty fields.** They are not
+  transcript-derived — they come from the casebook, and they have their own
+  required gate above. Empty is not a legal outcome for them.
 - Do not fill `Overall Performance`. That is Daniel's judgment and his scale.
 
 ### 7. Hand off
@@ -212,6 +255,8 @@ do not run it.
 ## Verification
 
 - [ ] The session entry exists in `casing/casing-session_log/` with his naming.
+- [ ] The entry body contains exactly one `## Sync` section and
+      `Templater: Insert _sync-this-case`.
 - [ ] No existing entry was overwritten.
 - [ ] The recording is in `recordings/`, unmodified, and referenced.
 - [ ] The transcript is attached verbatim.

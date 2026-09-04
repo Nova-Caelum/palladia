@@ -90,17 +90,11 @@ summary: "..."                        # <=280 chars, one line, no newlines
 tags: [case-scoring, synthesis, time-pressure]
 case_id: case-2026-08-30-01          # omit if not case-linked
 dimensions: [synthesis, communication] # readiness dimensions touched; omit if none
-independence: light-prompt           # omit if not a scored rep
 ---
 ```
 
 **`type` vocabulary:** `case-scored` · `behavioral-scored` · `drill` · `debrief` ·
 `intake` · `ledger-update` · `decision` · `plan-change` · `session-note`
-
-**`independence` vocabulary** (how much help the rep needed — required on any
-scored rep, because a right answer after three hints is not a right answer):
-`no-help` · `neutral-clarification` · `light-prompt` · `directional-hint` ·
-`major-scaffold` · `answer-supplied`
 
 **`summary` is capped at 280 characters** and must be one line. If it does not
 fit in 280 characters, the detail belongs in the body — that is what the body is
@@ -148,7 +142,6 @@ After appending, confirm:
 - [ ] File exists at `_meta/worklog_entries/` with the timestamp-prefixed name.
 - [ ] Frontmatter parses — no unquoted colons, no multi-line scalars.
 - [ ] `summary` is one line and ≤280 characters.
-- [ ] `independence` is present if this was a scored rep.
 - [ ] No prior entry was modified.
 
 ## Deferred
