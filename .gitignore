@@ -5,3 +5,22 @@ __pycache__/
 auth.json
 *.sqlite
 *.db
+
+# ── Casebook content — 2026-09-09 ────────────────────────────────────────────
+# This repository is PUBLIC. Casebook PDFs and individual case files are
+# copyrighted third-party material and must never be synced here.
+# Verified 2026-09-09: no such file has ever been committed to any branch.
+*casebook*
+*Casebook*
+*CASEBOOK*
+individual_cases/
+**/individual_cases/
+**/individual_cases/**
+
+# Exceptions: the extraction tooling is CODE, not case content. Without these
+# the rules above would silently ignore any NEW file added to either directory
+# (already-tracked files are unaffected by .gitignore, new ones are not).
+!plugins/palladia-casebook-extraction/
+!plugins/palladia-casebook-extraction/**
+!skills/casebook-case-extract/
+!skills/casebook-case-extract/**
