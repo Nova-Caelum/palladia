@@ -24,3 +24,13 @@ individual_cases/
 !plugins/palladia-casebook-extraction/**
 !skills/casebook-case-extract/
 !skills/casebook-case-extract/**
+
+# Case-prep libraries ignored by LOCATION, not by name. A name pattern rots the
+# moment someone adds a file that does not happen to contain "casebook" —
+# study_guides/ already holds five such files (Casing_*.pdf).
+casebooks_catalogs/
+**/casebooks_catalogs/
+**/casebooks_catalogs/**
+study_guides/
+**/study_guides/
+**/study_guides/**
