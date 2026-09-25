@@ -41,7 +41,7 @@ The key is `FAL_ADMIN_KEY` — Nova Caelum's fleet-wide fal.ai account key, reso
 
 **Never read, echo, log, or write the value.** Reference it by name only. If it is missing, report that the credential is unavailable — never print what you found.
 
-⚠️ **Open trust-boundary question.** `FAL_ADMIN_KEY` currently lives in the Claude-fleet BWS project, while HOST authenticates against `BWS_PROJECT`. These are deliberately walled apart. Installing this MCP on Palladia needs that resolved first — the same unresolved issue as the Exa and Browserbase credentials.
+⚠️ **Open trust-boundary question.** `FAL_ADMIN_KEY` currently lives in the Claude fleet's credential store, which is deliberately walled apart from the credentials Palladia's own host uses. Installing this MCP on Palladia needs that resolved first — the same unresolved issue as the Exa and Browserbase credentials.
 
 ## Cost
 

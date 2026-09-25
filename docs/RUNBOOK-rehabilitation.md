@@ -184,13 +184,13 @@ cp "$P/memories/USER.md"   "$ARCH/USER.contaminated.md"   2>/dev/null || true
 cp "$CAN/identity/MEMORY.md" "$P/memories/MEMORY.md"
 cp "$CAN/identity/USER.md"   "$P/memories/USER.md"
 wc -m "$P/memories/MEMORY.md" "$P/memories/USER.md"
-grep -c 'TARGET_DATE\|TARGET_FIRM' "$P/memories/MEMORY.md"
+grep -c 'PREPARATION RECORD' "$P/memories/MEMORY.md"
 ```
 
 | Gate | Pass | On fail |
 |---|---|---|
 | G5.5 | Both files < 2200 characters | **STOP.** Over the cap, Hermes truncates and the tail is silently lost. |
-| G5.6 | `MEMORY.md` carries the target office / TARGET_DATE line | **STOP.** |
+| G5.6 | `MEMORY.md` carries the `■ PREPARATION RECORD` block (count ≥ 1) — proves the canonical seed, not the contaminated copy, was installed | **STOP.** |
 | G5.7 | `USER.md`'s locked block is present — **re-measure, do not trust the pinned hash** in the old installer; Daniel edited it 2026-08-29 and may again | Note and continue; report the measured value to Daniel. |
 
 > **Every install after this one skips 5b entirely.** Overwriting these destroys what she has learned about Daniel.
@@ -393,11 +393,11 @@ In a fresh CLI session, ask: **"Who are you?"**
 
 `hermes hooks fire` does not exist and would have targeted shell hooks anyway. The real test is behavioural. In a **new** session, first turn:
 
-> *"Without reading any files, what is my current target and what are my open weaknesses?"*
+> *"Without reading any files, what are my open weaknesses and what is on my top-of-mind list?"*
 
 | Gate | Pass | On fail |
 |---|---|---|
-| G12.2 | She answers from primer content — the target office target and named weaknesses — without a file-read tool call | **STOP.** The injection is not landing. Confirm `plugin.yaml` says `pre_llm_call`, the plugin is *enabled*, and `PALLADRIVE_PATH` resolves. |
+| G12.2 | She answers from primer content — the named open weaknesses and the Top of mind items — without a file-read tool call | **STOP.** The injection is not landing. Confirm `plugin.yaml` says `pre_llm_call`, the plugin is *enabled*, and `PALLADRIVE_PATH` resolves. |
 | G12.3 | Temporarily rename `PRIMER.md`, open a new session, ask again → she reports the primer is missing and says her state may be stale | Note. Confirms fail-loud rather than fail-silent. **Rename it back.** |
 | G12.4 | On the **second** turn of the same session, the primer block is not repeated | Note. Confirms the first-turn gate. Repetition means `is_first_turn` is absent — visible, not dangerous, but report it. |
 

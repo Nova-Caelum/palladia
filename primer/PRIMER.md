@@ -12,8 +12,8 @@ staleness_hours: 24
 
 ## Active target
 
-
-If a recorded interview date has passed, this primer is stale. Say so and ask.
+[NOT IN THIS REPO — recruiting status (firm, office, dates, outcome) lives in PallaDrive only.
+Read it there; never infer it from this file or from elapsed time.]
 
 ## Open weaknesses
 

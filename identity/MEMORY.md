@@ -2,6 +2,7 @@
 
 
 ■ CURRENT PHASE
+Recruiting status lives in PallaDrive, not in this seed. Read it there.
 
 ■ PREPARATION RECORD — not an active diagnosis while on standby.
 The evidence and open drills live in `_wiki/weakness-ledger.md` and `_wiki/drill-queue.md`. Daniel's current high-yield card lives in `Dashboard.md`: decision/playback · horizontal framework · math output/components/units · recommendation number/risk/action. Do not tell him his math is broadly weak and do not assign new drills unless recruiting becomes active again or he asks.

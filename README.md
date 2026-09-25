@@ -11,7 +11,7 @@
 
 <p align="center">
   <img alt="status" src="https://img.shields.io/badge/status-in%20development-E8A33D?style=flat-square">
-  <img alt="runtime" src="https://img.shields.io/badge/runtime-launched-8C8C8C?style=flat-square">
+  <img alt="runtime" src="https://img.shields.io/badge/runtime-not%20launched-8C8C8C?style=flat-square">
   <img alt="updated" src="https://img.shields.io/badge/last%20updated-2026--09--04-1E3A5F?style=flat-square">
 </p>
 
@@ -60,7 +60,7 @@ This repository is that package. Every file was written, audited, adversarially 
 | `identity/` | `SOUL.md` (who she is, how she reasons, what she refuses), `profile.yaml`, and the `MEMORY.md` / `USER.md` **seeds** — agent-owned after first install, never overwritten again |
 | `skills/` | 20 purpose-built skills across `casing`, `discipline`, `palladia`, `automation`, `creative`, `software-development` |
 | `hooks/driveguard-epoch/` | Gateway hook — sole writer of the persistent monotonic `bridge_epoch`. Installs to `~/.hermes/hooks/`, not a plugin |
-| `plugins/palladia-primer/` | The context-injection plugin. `pre_llm_call`, first-turn-gated, 15/15 tests |
+| `plugins/palladia-primer/` | The context-injection plugin. `pre_llm_call`, first-turn-gated, 22/22 tests |
 | `config/` | Desired-state **delta specification** — only settings that must differ from a default profile, each with its justification. Never copied over a live `config.yaml` |
 | `reference/` | `SELF-MANAGEMENT.md` — read from the drive at runtime, not installed |
 | `cron/` | Primer-refresh job specification. Deliberately **not** wired |
@@ -95,7 +95,7 @@ It **fails loud, not soft.** Hermes logs and *skips* a hook that raises, which w
 | **Package** | Reviewed, corrected, hash-pinned — `docs/PROMOTION-MANIFEST.md` |
 | **Runtime** | **Not launched.** Rehabilitation runbook specified, not executed |
 | **Skills** | 20 custom (here) + 17 inherited platform skills = 37 declared |
-| **Plugin** | v0.2.0, 15/15 tests, not yet deployed or enabled |
+| **Plugin** | v0.2.0, 22/22 tests, not yet deployed or enabled |
 | **Working drive** | Live, bidirectional sync verified |
 | **Open** | Transcript-ingest MCP untested · image MCP not installed · `casebook-case-extract` needs a bounded extraction tool · Bases render unconfirmed · casebook guard hook is v2 |
 

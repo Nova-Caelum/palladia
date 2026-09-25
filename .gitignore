@@ -34,3 +34,14 @@ casebooks_catalogs/
 study_guides/
 **/study_guides/
 **/study_guides/**
+
+# ── Live-state and private-data guards — 2026-09-25 ─────────────────────────
+# This repository is PUBLIC. Live agent state, transcripts and env files never
+# belong here. NOTE: primer/PRIMER.md is currently tracked as the v1 seed; this
+# rule only stops it being re-added if it is ever untracked. Move the seed to
+# primer/PRIMER.example.md before it holds live state.
+primer/PRIMER.md
+**/memories/
+*.env
+.env*
+**/transcripts/
