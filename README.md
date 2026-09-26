@@ -15,6 +15,12 @@
   <img alt="updated" src="https://img.shields.io/badge/last%20updated-2026--09--04-1E3A5F?style=flat-square">
 </p>
 
+<p align="center">
+  <a href="https://github.com/Nova-Caelum/palladia/actions/workflows/ci.yml"><img alt="unittest" src="https://github.com/Nova-Caelum/palladia/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+</p>
+
+CI runs the driveguard, primer-hook, and epoch-handler unittest suites on every push and pull request to `main`.
+
 ---
 
 > ### 🚧 In development — 2026-09-04
