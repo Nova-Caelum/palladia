@@ -1,0 +1,22 @@
+name: unittest
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python3 plugins/palladia-driveguard/test_driveguard.py
+      - run: python3 plugins/palladia-primer/test_primer_hook.py
+      - run: python3 hooks/driveguard-epoch/test_epoch.py
