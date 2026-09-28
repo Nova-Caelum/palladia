@@ -1,0 +1,61 @@
+name: DevOps-Lead PR Review
+
+# THIN CALLER STUB — Option B source-of-truth/runtime split.
+# All review logic lives in Nova-Caelum/devops-lead
+# .github/workflows/devops-lead-pr-review.yml (source of truth). The `uses:`
+# full-SHA pin below IS the review gate for logic changes: to change review
+# behaviour, PR + review in the devops-lead repo, then bump this pin in a
+# one-line PR here. Never re-point to @main.
+#
+# PINNED 0d1b16c — the last commit that touched the reusable workflow
+# (2026-07-31, "parameterize reusable workflow for multi-tenant callers").
+# Same pin as every other Nova-Caelum caller, so all callers execute identical
+# review logic.
+#
+# Fork PRs: the `if:` below restricts this job to same-owner PRs. A PR from a
+# fork is SKIPPED, never run blind — GitHub withholds secrets from fork
+# `pull_request` events, so without the guard the job would fail red rather
+# than pass. Skipped is the correct failure mode for a public repo.
+#
+# Rollback: git revert the commit that added this file. No other file changes.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  devops-lead-review:
+    if: ${{ github.event.pull_request.head.repo.owner.login == github.repository_owner }}
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: read
+      id-token: write
+    uses: Nova-Caelum/devops-lead/.github/workflows/devops-lead-pr-review.yml@0d1b16cee071fcd8896c7dc5130a2644f0360a30
+    secrets: inherit
+    with:
+      persona_source_repo: 'Nova-Caelum/devops-lead'
+      persona_source_ref: 'main'
+      persona_path: '.persona-source/.claude/agents/devops-lead.md'
+      auto_merge_paths: |
+        EVERY path in this repo is AUTO-MERGE-SAFE when the diff trips none of the escalate conditions below. Path alone never decides: classify by what the diff DOES, per the numbered escalate list. Routine traffic for this repo — merge it confidently — is: prose edits to README.md and the docs/** set (Bases-HouseRules.md, Bases-Reference_DRAFT.md, DifficultyMapping.md, SheetMapping.md, SELF-MANAGEMENT.md, reference/SELF-MANAGEMENT.md); prose and rubric-wording edits to a skills/*/SKILL.md that leave its coaching procedure and its scoring thresholds intact; added test cases under any test_*.py that only ADD assertions; plugin README.md files; assets/*.png; .gitignore. This repo is in development and not launched, so ordinary iteration on coaching content is expected traffic — merge it. A file DELETION that matches the PR's stated scope (a retirement, a fold, a supersede) is normal work and merges.
+      escalate_paths: |
+        (1) SECRET MATERIAL in the diff — a key, token, password, private key or OAuth/refresh token, a dollar-brace VAR in a config secret field, a secret reaching hook stdout, `set -x`, or `curl -v`.
+        (2) PERSONAL OR COACHING DATA ABOUT A REAL PERSON reaching this PUBLIC repo — primer/PRIMER.md, identity/USER.md, identity/MEMORY.md, and any transcript, case record, score history, name, employer or contact detail added anywhere. This repo is public while still in development, so a diff that adds such content is a privacy exposure, not a content edit. Escalate even when the content looks like sample data.
+        (3) THE IDENTITY — identity/SOUL.md, identity/MEMORY.md, identity/USER.md, identity/profile.yaml. The persona IS the product here. A silent edit to the coach's character, its memory, or the profile that selects its behaviour changes every session it will ever run, and nothing downstream would notice.
+        (4) WHAT REACHES THE MODEL — plugins/palladia-primer/** (plugin.yaml, __init__.py, test_primer_hook.py) and primer/PRIMER.md. This is the context-injection plugin; it decides what text is placed in front of the model on every session. A change to what it injects, when it injects, or how much, is a change to the product's behaviour that no test of the skills would catch.
+        (5) A COACHING RUBRIC OR SCORING THRESHOLD CHANGED — skills/case-scoring/SKILL.md, skills/behavioral-scoring/SKILL.md, skills/weakness-derivation/SKILL.md, skills/high-yield-drills/SKILL.md, and docs/DifficultyMapping.md. These decide what the product tells a user about their own performance; a shifted threshold silently re-grades everyone.
+        (6) CODE THAT EXECUTES — hooks/driveguard-epoch/handler.py, hooks/driveguard-epoch/HOOK.yaml, plugins/*/handlers.py, plugins/*/__init__.py, plugins/*/schemas.py, scripts/gen_drive_map.py, scripts/md_to_pdf.py, scripts/sweep_stale_refs.py, .githooks/pre-commit, and cron/palladia-primer-refresh.md plus cron/palladia-stale-ref-sweep.md which schedule unattended runs.
+        (7) THE WRITE BOUNDARY — plugins/palladia-driveguard/zones.json, plugins/palladia-driveguard/plugin.yaml, plugins/palladia-driveguard/__init__.py. Driveguard is what stops this agent writing outside its permitted zones; widening a zone, or loosening the guard, is a grant and is escalate even when the diff is one line.
+        (8) A NEW DOOR OR A NEW GRANT — a new entry in config/config-desired-state.yaml, a new plugin directory or plugins/*/plugin.yaml registration, a new hook registration, a new external service or credential, or an allowed-tools / permissions / model field appearing anywhere. identity/profile.yaml is the only thing that tracks this agent's loadout; a grant that profile.yaml does not see is escalate.
+        (9) A FETCH FROM AN UNTRUSTED SOURCE inside a hook, skill, plugin or script — curl/wget/fetch/urllib/requests to a URL that is not ours or a known-trusted source, an unpinned dependency, instructions embedded in fetched content, or anything else that puts untrusted text into agent context. skills/granola-capture and skills/generate-image both reach outward; changes to what either sends or ingests are escalate.
+        (10) GATE-WEAKENING — deletes or loosens an assertion in hooks/driveguard-epoch/test_epoch.py, plugins/palladia-driveguard/test_driveguard.py or plugins/palladia-primer/test_primer_hook.py, or adds --force, --no-verify, a skip marker or a relaxed mode anywhere. The driveguard tests are the only executable check on item (7).
+        (11) ANYTHING IRREGULAR — the diff does something its own description does not account for, obfuscated/encoded/base64 payloads, an unexplained deletion, a new binary or non-text file, or a change that does not fit its stated purpose. This is the "somebody slipped something in" test.
+        (12) THE DELIVERY MACHINERY ITSELF — .github/workflows/**, docs/PROMOTION-MANIFEST.md, docs/RUNBOOK-rehabilitation.md.
+        (13) A failing CI check or a merge conflict.
+      worklog_project: 'palladia'
+      repo_context_description: >-
+        the public but not-yet-launched Palladia case-interview coach — a Hermes-substrate agent whose
+        identity files, twenty coaching skills and context-injection plugin ARE the product, and whose
+        primer and identity files are the place personal coaching data would land if it ever leaked in
