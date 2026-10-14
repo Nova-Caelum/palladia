@@ -7,10 +7,8 @@ name: DevOps-Lead PR Review
 # behaviour, PR + review in the devops-lead repo, then bump this pin in a
 # one-line PR here. Never re-point to @main.
 #
-# PINNED 0d1b16c — the last commit that touched the reusable workflow
-# (2026-07-31, "parameterize reusable workflow for multi-tenant callers").
-# Same pin as every other Nova-Caelum caller, so all callers execute identical
-# review logic.
+# PINNED 9bafb29 — canonical persona sync, repo policy deferral, Bot-only
+# author hold and separate review-failed infrastructure labels (devops-lead#4).
 #
 # Fork PRs: the `if:` below restricts this job to same-owner PRs. A PR from a
 # fork is SKIPPED, never run blind — GitHub withholds secrets from fork
@@ -32,7 +30,7 @@ jobs:
       issues: write
       actions: read
       id-token: write
-    uses: Nova-Caelum/devops-lead/.github/workflows/devops-lead-pr-review.yml@fd0398b73ae19513b378d8a558aa295b877763bb
+    uses: Nova-Caelum/devops-lead/.github/workflows/devops-lead-pr-review.yml@9bafb290bf2473beedfdcbd4cb7461ccdb82064b
     secrets: inherit
     with:
       persona_source_repo: 'Nova-Caelum/devops-lead'
@@ -41,6 +39,7 @@ jobs:
       auto_merge_paths: |
         EVERY path in this repo is AUTO-MERGE-SAFE when the diff trips none of the escalate conditions below. Path alone never decides: classify by what the diff DOES, per the numbered escalate list. Routine traffic for this repo — merge it confidently — is: prose edits to README.md and the docs/** set (Bases-HouseRules.md, Bases-Reference_DRAFT.md, DifficultyMapping.md, SheetMapping.md, SELF-MANAGEMENT.md, reference/SELF-MANAGEMENT.md); prose and rubric-wording edits to a skills/*/SKILL.md that leave its coaching procedure and its scoring thresholds intact; added test cases under any test_*.py that only ADD assertions; plugin README.md files; assets/*.png; .gitignore. This repo is in development and not launched, so ordinary iteration on coaching content is expected traffic — merge it. A file DELETION that matches the PR's stated scope (a retirement, a fold, a supersede) is normal work and merges.
       escalate_paths: |
+        The numbered conditions below are this repo's authoritative escalate list; defer to them instead of the persona's _agentOS-specific list, preserving its default-merge posture, security asymmetry and no additional path-only holds.
         (1) SECRET MATERIAL in the diff — a key, token, password, private key or OAuth/refresh token, a dollar-brace VAR in a config secret field, a secret reaching hook stdout, `set -x`, or `curl -v`.
         (2) PERSONAL OR COACHING DATA ABOUT A REAL PERSON reaching this PUBLIC repo — primer/PRIMER.md, identity/USER.md, identity/MEMORY.md, and any transcript, case record, score history, name, employer or contact detail added anywhere. This repo is public while still in development, so a diff that adds such content is a privacy exposure, not a content edit. Escalate even when the content looks like sample data.
         (3) THE IDENTITY — identity/SOUL.md, identity/MEMORY.md, identity/USER.md, identity/profile.yaml. The persona IS the product here. A silent edit to the coach's character, its memory, or the profile that selects its behaviour changes every session it will ever run, and nothing downstream would notice.
